@@ -182,8 +182,10 @@ The original app still builds with `./gradlew :app:assembleFlossOsmDebug`.
 [`.github/workflows/android.yml`](.github/workflows/android.yml) runs the unit tests and builds the APK
 on every push and pull request, and attaches the APK to a GitHub release when a `v*` tag is pushed.
 
-Without secrets the workflow produces a debug-signed APK. To get release-signed builds that update an
-installed copy in place, add these repository secrets:
+Builds are release-signed when these repository secrets exist (otherwise, for example on pull
+requests from forks, a debug-signed APK is built). Release tags require them, must match `versionName`
+in `next/build.gradle` (`v6.4.0` for `6.4.0`) and fail rather than publish a debug build. The
+workflow verifies the signature and prints the certificate's SHA-256 in the run summary.
 
 | Secret | Value |
 | --- | --- |
@@ -191,6 +193,8 @@ installed copy in place, add these repository secrets:
 | `KEYSTORE_PASSWORD` | keystore password |
 | `KEY_ALIAS` | key alias |
 | `KEY_PASSWORD` | key password |
+
+To release: bump `versionCode` / `versionName`, commit, then `git tag v<version>` and push the tag.
 
 ## Project layout
 
