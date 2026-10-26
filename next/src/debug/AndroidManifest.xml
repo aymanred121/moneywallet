@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: lets the screenshot script seed a neutral demo dataset over adb. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <receiver
+            android:name=".debug.DemoDataReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.oriondev.moneywallet.next.DEMO_SEED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

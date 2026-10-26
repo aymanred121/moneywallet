@@ -41,99 +41,117 @@ public class ThemeEngine implements ITheme {
     private static final String COLOR_ACCENT = "color_accent";
     private static final String MODE = "mode";
 
-    private static final int DEFAULT_COLOR_PRIMARY = Color.parseColor("#3f51b5");
-    private static final int DEFAULT_COLOR_PRIMARY_DARK = Color.parseColor("#303F9F");
-    private static final int DEFAULT_COLOR_ACCENT = Color.parseColor("#FF4081");
+    private static final int DEFAULT_COLOR_PRIMARY = Color.parseColor("#006C4C");
+    private static final int DEFAULT_COLOR_PRIMARY_DARK = Color.parseColor("#005236");
+    private static final int DEFAULT_COLOR_ACCENT = Color.parseColor("#3D6373");
     private static final Mode DEFAULT_MODE = Mode.LIGHT;
 
     private static final int[] DEFAULT_TEXT_COLOR_PRIMARY = new int[] {
-            Color.parseColor("#DE000000"), // OK
-            Color.parseColor("#FFFFFFFF"), // OK
-            Color.parseColor("#FFFFFFFF")  // OK
+            Color.parseColor("#171D1A"),
+            Color.parseColor("#DEE4DE"),
+            Color.parseColor("#DEE4DE")
     };
 
     private static final int[] DEFAULT_TEXT_COLOR_PRIMARY_INVERSE = new int[] {
-            Color.parseColor("#DEFFFFFF"), // OK
-            Color.parseColor("#FF000000"), // OK
-            Color.parseColor("#FF000000")  // OK
+            Color.parseColor("#ECF2EC"),
+            Color.parseColor("#171D1A"),
+            Color.parseColor("#171D1A")
     };
 
     private static final int[] DEFAULT_TEXT_COLOR_SECONDARY = new int[] {
-            Color.parseColor("#8A000000"), // OK
-            Color.parseColor("#B3FFFFFF"), // OK
-            Color.parseColor("#B3FFFFFF")  // OK
+            Color.parseColor("#404943"),
+            Color.parseColor("#BFC9C2"),
+            Color.parseColor("#BFC9C2")
     };
 
     private static final int[] DEFAULT_TEXT_COLOR_SECONDARY_INVERSE = new int[] {
-            Color.parseColor("#8AFFFFFF"), // OK
-            Color.parseColor("#B3000000"), // OK
-            Color.parseColor("#B3000000")
+            Color.parseColor("#BFC9C2"),
+            Color.parseColor("#404943"),
+            Color.parseColor("#404943")
     };
 
     private static final int[] DEFAULT_ICON_COLOR = new int[] {
-            Color.parseColor("#8A000000"), // OK
-            Color.parseColor("#8AFFFFFF"), // OK
-            Color.parseColor("#8AFFFFFF")  // OK
+            Color.parseColor("#404943"),
+            Color.parseColor("#BFC9C2"),
+            Color.parseColor("#BFC9C2")
     };
 
     private static final int[] DEFAULT_HINT_TEXT_COLOR = new int[] {
-            Color.parseColor("#61000000"), // OK
-            Color.parseColor("#80FFFFFF"), // OK
-            Color.parseColor("#80FFFFFF")  // OK
+            Color.parseColor("#707973"),
+            Color.parseColor("#89938C"),
+            Color.parseColor("#89938C")
     };
 
     private static final int[] DEFAULT_COLOR_CARD_BACKGROUND = new int[] {
-            Color.parseColor("#FFFFFF"), // OK
-            Color.parseColor("#424242"), // OK
-            Color.parseColor("#424242")  // OK
+            Color.parseColor("#FFFFFF"),
+            Color.parseColor("#1B211E"),
+            Color.parseColor("#0A0F0D")
     };
 
     private static final int[] DEFAULT_COLOR_WINDOW_FOREGROUND = new int[] {
-            Color.parseColor("#FFFFFF"), // OK
-            Color.parseColor("#303030"), // OK
-            Color.parseColor("#000000")  // OK
+            Color.parseColor("#FFFFFF"),
+            Color.parseColor("#171D1A"),
+            Color.parseColor("#000000")
     };
 
     private static final int[] DEFAULT_COLOR_WINDOW_BACKGROUND = new int[] {
-            Color.parseColor("#FAFAFA"), // OK
-            Color.parseColor("#212121"), // OK
-            Color.parseColor("#212121")  // OK
+            Color.parseColor("#F5FBF5"),
+            Color.parseColor("#0F1512"),
+            Color.parseColor("#000000")
     };
 
     private static final int[] DEFAULT_COLOR_RIPPLE = new int[] {
-            Color.parseColor("#1f000000"), // OK
-            Color.parseColor("#33ffffff"), // OK
-            Color.parseColor("#33ffffff") // OK
+            Color.parseColor("#1f171D1A"),
+            Color.parseColor("#33DEE4DE"),
+            Color.parseColor("#33DEE4DE")
     };
 
     private static final int[] DEFAULT_DIALOG_BACKGROUND_COLOR = new int[] {
-            Color.parseColor("#FFFFFF"), // OK
-            Color.parseColor("#424242"), // OK
-            Color.parseColor("#424242")  // OK
+            Color.parseColor("#E3EAE4"),
+            Color.parseColor("#252B28"),
+            Color.parseColor("#1B211E")
     };
 
     private static final int[] DRAWER_BACKGROUND_COLOR = new int[] {
-            Color.parseColor("#F9F9F9"),
-            Color.parseColor("#303030"),
-            Color.parseColor("#303030")
+            Color.parseColor("#EFF5EF"),
+            Color.parseColor("#171D1A"),
+            Color.parseColor("#0A0F0D")
     };
 
     private static final int[] DRAWER_ICON_COLOR = new int[] {
-            Color.parseColor("#8A000000"),
-            Color.parseColor("#8AFFFFFF"),
-            Color.parseColor("#8AFFFFFF")
+            Color.parseColor("#404943"),
+            Color.parseColor("#BFC9C2"),
+            Color.parseColor("#BFC9C2")
     };
 
     private static final int[] DRAWER_TEXT_COLOR = new int[] {
-            Color.parseColor("#DE000000"),
-            Color.parseColor("#DEFFFFFF"),
-            Color.parseColor("#DEFFFFFF")
+            Color.parseColor("#171D1A"),
+            Color.parseColor("#DEE4DE"),
+            Color.parseColor("#DEE4DE")
     };
 
     private static final int[] DRAWER_SELECTED_ITEM_COLOR = new int[] {
-            Color.parseColor("#E8E8E8"),
-            Color.parseColor("#202020"),
-            Color.parseColor("#202020")
+            Color.parseColor("#E9EFE9"),
+            Color.parseColor("#303633"),
+            Color.parseColor("#252B28")
+    };
+
+    private static final int[] DEFAULT_COLOR_SURFACE_CONTAINER = new int[] {
+            Color.parseColor("#E9EFE9"), // surface-container (light)
+            Color.parseColor("#1B211E"), // surface-container (dark)
+            Color.parseColor("#131917")  // surface-container (deep dark)
+    };
+
+    private static final int[] DEFAULT_COLOR_OUTLINE_VARIANT = new int[] {
+            Color.parseColor("#BFC9C2"),
+            Color.parseColor("#404943"),
+            Color.parseColor("#404943")
+    };
+
+    private static final int[] DEFAULT_COLOR_ERROR = new int[] {
+            Color.parseColor("#BA1A1A"),
+            Color.parseColor("#FFB4AB"),
+            Color.parseColor("#FFB4AB")
     };
 
     private static final int INDEX_MODE_LIGHT = 0;
@@ -320,7 +338,31 @@ public class ThemeEngine implements ITheme {
 
     @Override
     public int getErrorColor() {
-        return Color.RED;
+        return DEFAULT_COLOR_ERROR[getMode().getIndex()];
+    }
+
+    @Override
+    public int getColorPrimaryContainer() {
+        // M3 primary-container: light tone (~90) in light mode, deep tone (~30) in dark modes,
+        // derived from the (user selectable) primary color.
+        int primary = getColorPrimary();
+        return isDark() ? Util.blendColors(primary, Color.BLACK, 0.55f) : Util.blendColors(primary, Color.WHITE, 0.78f);
+    }
+
+    @Override
+    public int getColorOnPrimaryContainer() {
+        int primary = getColorPrimary();
+        return isDark() ? Util.blendColors(primary, Color.WHITE, 0.80f) : Util.blendColors(primary, Color.BLACK, 0.70f);
+    }
+
+    @Override
+    public int getColorSurfaceContainer() {
+        return DEFAULT_COLOR_SURFACE_CONTAINER[getMode().getIndex()];
+    }
+
+    @Override
+    public int getColorOutlineVariant() {
+        return DEFAULT_COLOR_OUTLINE_VARIANT[getMode().getIndex()];
     }
 
     @Override

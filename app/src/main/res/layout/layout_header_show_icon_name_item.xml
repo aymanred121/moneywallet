@@ -46,6 +46,7 @@
             android:layout_marginStart="@dimen/material_activity_header_text_start_margin"
             android:layout_marginRight="@dimen/material_activity_header_text_end_margin"
             android:layout_marginEnd="@dimen/material_activity_header_text_end_margin"
+            android:textAppearance="@style/TextAppearance.MoneyWallet.HeadlineSmall"
             android:textSize="@dimen/material_component_header_layout_text_size"
             android:maxLines="1"
             android:ellipsize="end"

@@ -19,11 +19,47 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#3f51b5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="textPrimary">#DE000000</color>
-    <color name="textSecondary">#8A000000</color>
-    <color name="textPrimaryInverted">#DEFFFFFF</color>
-    <color name="textSecondaryInverted">#8AFFFFFF</color>
+    <!-- Material 3 tonal scheme, seed #006C4C (finance green). Light roles. -->
+    <color name="colorPrimary">#006C4C</color>
+    <color name="colorPrimaryDark">#005236</color>
+    <color name="colorAccent">#3D6373</color>
+    <color name="md_on_primary">#FFFFFF</color>
+    <color name="md_primary_container">#89F8C7</color>
+    <color name="md_on_primary_container">#002114</color>
+    <color name="md_secondary">#4D6357</color>
+    <color name="md_on_secondary">#FFFFFF</color>
+    <color name="md_secondary_container">#CFE9D9</color>
+    <color name="md_on_secondary_container">#0A1F16</color>
+    <color name="md_tertiary">#3D6373</color>
+    <color name="md_on_tertiary">#FFFFFF</color>
+    <color name="md_tertiary_container">#C1E8FB</color>
+    <color name="md_on_tertiary_container">#001F29</color>
+    <color name="md_error">#BA1A1A</color>
+    <color name="md_on_error">#FFFFFF</color>
+    <color name="md_error_container">#FFDAD6</color>
+    <color name="md_on_error_container">#410002</color>
+    <color name="md_surface">#F5FBF5</color>
+    <color name="md_surface_dim">#D6DCD6</color>
+    <color name="md_surface_bright">#F5FBF5</color>
+    <color name="md_on_surface">#171D1A</color>
+    <color name="md_surface_variant">#DBE5DD</color>
+    <color name="md_on_surface_variant">#404943</color>
+    <color name="md_surface_container_lowest">#FFFFFF</color>
+    <color name="md_surface_container_low">#EFF5EF</color>
+    <color name="md_surface_container">#E9EFE9</color>
+    <color name="md_surface_container_high">#E3EAE4</color>
+    <color name="md_surface_container_highest">#DEE4DE</color>
+    <color name="md_inverse_surface">#2C322E</color>
+    <color name="md_inverse_on_surface">#ECF2EC</color>
+    <color name="md_inverse_primary">#6CDBAC</color>
+    <color name="md_outline">#707973</color>
+    <color name="md_outline_variant">#BFC9C2</color>
+    <!-- Semantic money colors (defaults, user-overridable in preferences) -->
+    <color name="md_income">#2E7D5B</color>
+    <color name="md_expense">#BA1A1A</color>
+    <!-- Legacy aliases still referenced by layouts/code -->
+    <color name="textPrimary">#171D1A</color>
+    <color name="textSecondary">#404943</color>
+    <color name="textPrimaryInverted">#DEE4DE</color>
+    <color name="textSecondaryInverted">#BFC9C2</color>
 </resources>

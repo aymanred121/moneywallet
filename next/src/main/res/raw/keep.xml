@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Category icons are looked up by name (IconCatalog) and stored in backups, so resource
+     shrinking must never drop them even though no code references them directly. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_icon_*" />

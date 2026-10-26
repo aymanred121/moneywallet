@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2026.
+  ~
+  ~ This file is part of MoneyWallet.
+  ~
+  ~ MoneyWallet is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ MoneyWallet is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with MoneyWallet.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<merge
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <!-- Amount header of the transaction editor. The currency chip is tappable so the
+         amount can be typed in any currency; when it differs from the wallet currency a
+         second line shows the exchange rate (tappable, editable) and the converted amount. -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/material_activity_header_layout_height">
+
+        <!-- Currency selector: M3 assist-chip look (full-round, tonal fill, outline stroke, label-large) -->
+        <com.oriondev.moneywallet.ui.view.theme.ThemedTextView
+            android:id="@+id/currency_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:minWidth="48dp"
+            android:layout_marginLeft="@dimen/material_activity_header_text_start_margin"
+            android:layout_marginStart="@dimen/material_activity_header_text_start_margin"
+            android:layout_marginRight="@dimen/material_activity_header_text_end_margin"
+            android:layout_marginEnd="@dimen/material_activity_header_text_end_margin"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:paddingRight="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            android:background="@drawable/bg_currency_chip"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/action_change_currency"
+            android:textAppearance="@style/TextAppearance.MoneyWallet.LabelLarge"
+            android:textSize="14sp"
+            app:layout_constraintTop_toTopOf="@+id/money_text_view"
+            app:layout_constraintBottom_toBottomOf="@+id/money_text_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:theme_textColor="textOverColorPrimary"
+            tools:text="SAR" />
+
+        <com.oriondev.moneywallet.ui.view.theme.ThemedTextView
+            android:id="@+id/money_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/material_activity_header_text_end_margin"
+            android:layout_marginEnd="@dimen/material_activity_header_text_end_margin"
+            android:textAppearance="@style/TextAppearance.MoneyWallet.DisplaySmall"
+            android:textSize="@dimen/header_money_text_size"
+            android:gravity="end"
+            android:maxLines="1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/secondary_money_text_view"
+            app:layout_constraintStart_toEndOf="@+id/currency_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:theme_textColor="textOverColorPrimary"
+            tools:text="520.56" />
+
+        <com.oriondev.moneywallet.ui.view.theme.ThemedTextView
+            android:id="@+id/exchange_rate_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/material_activity_header_text_start_margin"
+            android:layout_marginStart="@dimen/material_activity_header_text_start_margin"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.MoneyWallet.BodyMedium"
+            android:textSize="14sp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintTop_toTopOf="@+id/secondary_money_text_view"
+            app:layout_constraintBottom_toBottomOf="@+id/secondary_money_text_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/secondary_money_text_view"
+            app:theme_textColor="textOverColorPrimary"
+            tools:text="1 SAR = 0.2667 $" />
+
+        <com.oriondev.moneywallet.ui.view.theme.ThemedTextView
+            android:id="@+id/secondary_money_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/material_activity_header_text_end_margin"
+            android:layout_marginEnd="@dimen/material_activity_header_text_end_margin"
+            android:textAppearance="@style/TextAppearance.MoneyWallet.TitleMedium"
+            android:textSize="@dimen/header_money_secondary_text_size"
+            android:gravity="end"
+            android:maxLines="1"
+            app:layout_constraintTop_toBottomOf="@+id/money_text_view"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:theme_textColor="textOverColorPrimary"
+            tools:text="≈ $ 138.82" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

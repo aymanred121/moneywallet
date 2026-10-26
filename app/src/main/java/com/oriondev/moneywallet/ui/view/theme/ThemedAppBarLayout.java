@@ -56,6 +56,10 @@ public class ThemedAppBarLayout extends AppBarLayout implements ThemeEngine.Them
 
     @Override
     public void onApplyTheme(ITheme theme) {
+        // M3 top app bars are flat: depth is expressed by tone, not by a drop shadow
+        setStateListAnimator(null);
+        setElevation(0f);
+        setTargetElevation(0f);
         if (mBackgroundColor != null) {
             int background = getBackgroundColor(theme);
             setBackgroundColor(background);

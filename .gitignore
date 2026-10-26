@@ -6,3 +6,9 @@
 /build
 /captures
 .externalNativeBuild
+/dist
+/next/build
+/next/signing/
+/next/signing.properties
+/.claude/
+/skills-lock.json

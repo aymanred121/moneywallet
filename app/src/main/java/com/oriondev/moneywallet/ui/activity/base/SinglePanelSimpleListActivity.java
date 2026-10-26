@@ -82,6 +82,13 @@ public abstract class SinglePanelSimpleListActivity extends SinglePanelActivity 
         mAbstractCursorAdapter.changeCursor(null);
     }
 
+    /**
+     * Force the list to be reloaded (e.g. when a filter changes).
+     */
+    protected void reloadList() {
+        getSupportLoaderManager().restartLoader(DEFAULT_LOADER_ID, null, this);
+    }
+
     @Override
     public void onRefresh() {
         getSupportLoaderManager().restartLoader(DEFAULT_LOADER_ID, null, this);

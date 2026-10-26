@@ -26,6 +26,8 @@
         <enum name="colorAccent" value="2"/>
         <enum name="colorWindowBackground" value="3"/>
         <enum name="colorWindowForeground" value="4"/>
+        <enum name="colorSurfaceContainer" value="5"/>
+        <enum name="colorPrimaryContainer" value="6"/>
     </attr>
 
     <declare-styleable name="ThemedTextView">

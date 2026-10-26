@@ -59,6 +59,7 @@ public class PreferenceManager {
     private static final String GROUP_TYPE = "group_type";
     private static final String EXCHANGE_RATE_SERVICE = "exchange_rate_service";
     private static final String EXCHANGE_RATE_LAST_UPDATE = "exchange_rate_last_update";
+    private static final String BASE_CURRENCY = "base_currency_iso";
     private static final String DAILY_REMINDER = "daily_reminder";
     private static final String FIRST_START = "first_start";
     private static final String SERVICE_API_KEY = "user_api_key_";
@@ -88,14 +89,15 @@ public class PreferenceManager {
     public static final int GROUP_TYPE_YEARLY = 3;
 
     public static final int SERVICE_OPEN_EXCHANGE_RATE = 1;
+    public static final int SERVICE_EXCHANGE_RATE_API = 2;
 
     public static final int DAILY_REMINDER_DISABLED = -1;
 
     public static final long NO_CURRENT_WALLET = -1L;
     public static final long TOTAL_WALLET_ID = 0L;
 
-    private static final int DEFAULT_COLOR_INCOME = Color.BLUE;
-    private static final int DEFAULT_COLOR_EXPENSE = Color.RED;
+    private static final int DEFAULT_COLOR_INCOME = Color.parseColor("#2E7D5B"); // M3 green tone (income)
+    private static final int DEFAULT_COLOR_EXPENSE = Color.parseColor("#BA1A1A"); // M3 error tone (expense)
 
     private static SharedPreferences mPreferences;
 
@@ -187,6 +189,18 @@ public class PreferenceManager {
         mPreferences.edit().putLong(EXCHANGE_RATE_LAST_UPDATE, timestamp).apply();
     }
 
+    /**
+     * Set the base ("global") currency: multi-currency totals are converted to this currency.
+     * @param iso code of the currency or null to fall back to the device locale currency.
+     */
+    public static void setBaseCurrency(String iso) {
+        mPreferences.edit().putString(BASE_CURRENCY, iso).apply();
+    }
+
+    public static String getBaseCurrency() {
+        return mPreferences.getString(BASE_CURRENCY, null);
+    }
+
     public static void setIsFirstStartDone(boolean done) {
         mPreferences.edit().putBoolean(FIRST_START, done).apply();
     }
@@ -274,13 +288,16 @@ public class PreferenceManager {
     }
 
     public static int getCurrentExchangeRateService() {
-        return mPreferences.getInt(EXCHANGE_RATE_SERVICE, SERVICE_OPEN_EXCHANGE_RATE);
+        return mPreferences.getInt(EXCHANGE_RATE_SERVICE, SERVICE_EXCHANGE_RATE_API);
     }
 
     public static boolean hasCurrentExchangeRateServiceDefaultApiKey() {
         switch (getCurrentExchangeRateService()) {
             case SERVICE_OPEN_EXCHANGE_RATE:
                 return !TextUtils.isEmpty(BuildConfig.API_KEY_OPEN_EXCHANGE_RATES) && !"INSERT_API_KEY_HERE".equals(BuildConfig.API_KEY_OPEN_EXCHANGE_RATES);
+            case SERVICE_EXCHANGE_RATE_API:
+                // the open endpoint of ExchangeRate-API does not require any api-key
+                return true;
             default:
                 return false;
         }

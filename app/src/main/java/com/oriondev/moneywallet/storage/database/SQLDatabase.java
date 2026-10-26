@@ -61,7 +61,7 @@ import java.util.UUID;
 /*package-local*/ class SQLDatabase extends SQLiteOpenHelper {
 
     /*package-local*/ static final String DATABASE_NAME = "database.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String ENABLE_FOREIGN_KEYS = "PRAGMA foreign_keys=ON";
 
@@ -145,6 +145,14 @@ import java.util.UUID;
             // to let the user sort the items inside these tables of the database.
             db.execSQL(Schema.CREATE_WALLET_INDEX_COLUMN);
             db.execSQL(Schema.CREATE_CATEGORY_INDEX_COLUMN);
+        }
+        if (oldVersion < 4) {
+            // multi-currency wallets: a transaction can be entered in a currency different
+            // from the wallet currency. The wallet-currency amount is still stored in the
+            // 'money' column, the original amount, currency and rate are stored aside.
+            db.execSQL(Schema.CREATE_TRANSACTION_CURRENCY_COLUMN);
+            db.execSQL(Schema.CREATE_TRANSACTION_ORIGINAL_MONEY_COLUMN);
+            db.execSQL(Schema.CREATE_TRANSACTION_EXCHANGE_RATE_COLUMN);
         }
     }
 
@@ -639,6 +647,9 @@ import java.util.UUID;
         String subQuery = "SELECT " +
                 "t." + Schema.Transaction.ID + " AS " + Contract.Transaction.ID + ", " +
                 "t." + Schema.Transaction.MONEY + " AS " + Contract.Transaction.MONEY + ", " +
+                "t." + Schema.Transaction.CURRENCY + " AS " + Contract.Transaction.CURRENCY + ", " +
+                "t." + Schema.Transaction.ORIGINAL_MONEY + " AS " + Contract.Transaction.ORIGINAL_MONEY + ", " +
+                "t." + Schema.Transaction.EXCHANGE_RATE + " AS " + Contract.Transaction.EXCHANGE_RATE + ", " +
                 "t." + Schema.Transaction.DATE + " AS " + Contract.Transaction.DATE + ", " +
                 "t." + Schema.Transaction.DESCRIPTION + " AS " + Contract.Transaction.DESCRIPTION + ", " +
                 "t." + Schema.Transaction.CATEGORY + " AS " + Contract.Transaction.CATEGORY_ID + ", " +
@@ -727,6 +738,9 @@ import java.util.UUID;
         // insert the body of the transaction inside the database
         ContentValues cv = new ContentValues();
         cv.put(Schema.Transaction.MONEY, contentValues.getAsLong(Contract.Transaction.MONEY));
+        cv.put(Schema.Transaction.CURRENCY, contentValues.getAsString(Contract.Transaction.CURRENCY));
+        cv.put(Schema.Transaction.ORIGINAL_MONEY, contentValues.getAsLong(Contract.Transaction.ORIGINAL_MONEY));
+        cv.put(Schema.Transaction.EXCHANGE_RATE, contentValues.getAsDouble(Contract.Transaction.EXCHANGE_RATE));
         cv.put(Schema.Transaction.DATE, contentValues.getAsString(Contract.Transaction.DATE));
         cv.put(Schema.Transaction.DESCRIPTION, contentValues.getAsString(Contract.Transaction.DESCRIPTION));
         cv.put(Schema.Transaction.CATEGORY, contentValues.getAsLong(Contract.Transaction.CATEGORY_ID));
@@ -860,6 +874,15 @@ import java.util.UUID;
         ContentValues cv = new ContentValues();
         if (contentValues.containsKey(Contract.Transaction.MONEY)) {
             cv.put(Schema.Transaction.MONEY, contentValues.getAsLong(Contract.Transaction.MONEY));
+        }
+        if (contentValues.containsKey(Contract.Transaction.CURRENCY)) {
+            cv.put(Schema.Transaction.CURRENCY, contentValues.getAsString(Contract.Transaction.CURRENCY));
+        }
+        if (contentValues.containsKey(Contract.Transaction.ORIGINAL_MONEY)) {
+            cv.put(Schema.Transaction.ORIGINAL_MONEY, contentValues.getAsLong(Contract.Transaction.ORIGINAL_MONEY));
+        }
+        if (contentValues.containsKey(Contract.Transaction.EXCHANGE_RATE)) {
+            cv.put(Schema.Transaction.EXCHANGE_RATE, contentValues.getAsDouble(Contract.Transaction.EXCHANGE_RATE));
         }
         if (contentValues.containsKey(Contract.Transaction.DATE)) {
             cv.put(Schema.Transaction.DATE, contentValues.getAsString(Contract.Transaction.DATE));

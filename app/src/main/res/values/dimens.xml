@@ -89,7 +89,7 @@
     <dimen name="material_component_lists_header_height">48dp</dimen>
     <dimen name="material_component_lists_header_start_margin">16dp</dimen>
     <dimen name="material_component_lists_header_end_margin">16dp</dimen>
-    <dimen name="material_component_lists_header_text_size">14sp</dimen>
+    <dimen name="material_component_lists_header_text_size">14sp</dimen> <!-- M3 label-large -->
 
     <dimen name="material_component_lists_card_top_layout_height">64dp</dimen>
     <dimen name="material_component_lists_card_start_margin">8dp</dimen>
@@ -126,8 +126,8 @@
 
     <dimen name="material_component_dialog_min_height">100dp</dimen>
 
-    <dimen name="header_money_text_size">28sp</dimen>
-    <dimen name="header_money_secondary_text_size">18sp</dimen>
+    <dimen name="header_money_text_size">36sp</dimen> <!-- M3 display-small -->
+    <dimen name="header_money_secondary_text_size">16sp</dimen> <!-- M3 title-medium -->
     <dimen name="cover_layout_text_padding">12dp</dimen>
 
     <dimen name="activity_launcher_first_start_padding_left">20dp</dimen>

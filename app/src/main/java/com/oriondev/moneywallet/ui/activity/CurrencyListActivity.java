@@ -24,7 +24,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.annotation.StringRes;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
@@ -38,6 +43,8 @@ import com.oriondev.moneywallet.ui.activity.base.SinglePanelSimpleListActivity;
 import com.oriondev.moneywallet.ui.adapter.recycler.AbstractCursorAdapter;
 import com.oriondev.moneywallet.ui.adapter.recycler.CurrencyCursorAdapter;
 import com.oriondev.moneywallet.ui.view.AdvancedRecyclerView;
+import com.oriondev.moneywallet.ui.view.theme.ITheme;
+import com.oriondev.moneywallet.ui.view.theme.ThemeEngine;
 import com.oriondev.moneywallet.utils.CurrencyManager;
 
 /**
@@ -52,6 +59,7 @@ public class CurrencyListActivity extends SinglePanelSimpleListActivity implemen
     public static final int CURRENCY_PICKER = 1;
 
     private int mActivityMode;
+    private String mSearchQuery;
 
     @Override
     protected void onPrepareRecyclerView(AdvancedRecyclerView recyclerView) {
@@ -77,6 +85,52 @@ public class CurrencyListActivity extends SinglePanelSimpleListActivity implemen
     }
 
     @Override
+    @MenuRes
+    protected int onInflateMenu() {
+        return R.menu.menu_currency_list;
+    }
+
+    @Override
+    protected void onMenuCreated(Menu menu) {
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        if (searchItem != null && searchItem.getActionView() instanceof SearchView) {
+            SearchView searchView = (SearchView) searchItem.getActionView();
+            searchView.setQueryHint(getString(R.string.hint_search_currency));
+            // the search box sits on the colored toolbar: use readable colors on that background
+            ITheme theme = ThemeEngine.getTheme();
+            int textColor = theme.getBestTextColor(theme.getColorPrimary());
+            int hintColor = theme.getBestHintColor(theme.getColorPrimary());
+            android.widget.EditText editText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+            if (editText != null) {
+                editText.setTextColor(textColor);
+                editText.setHintTextColor(hintColor);
+            }
+            android.widget.ImageView closeButton = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
+            if (closeButton != null) {
+                closeButton.setColorFilter(textColor);
+            }
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    String query = newText != null ? newText.trim() : null;
+                    if (!TextUtils.equals(query, mSearchQuery)) {
+                        mSearchQuery = query;
+                        reloadList();
+                    }
+                    return true;
+                }
+
+            });
+        }
+    }
+
+    @Override
     protected boolean isFloatingActionButtonEnabled() {
         return mActivityMode == CURRENCY_MANAGER;
     }
@@ -99,8 +153,16 @@ public class CurrencyListActivity extends SinglePanelSimpleListActivity implemen
                 Contract.Currency.DECIMALS,
                 Contract.Currency.FAVOURITE
         };
-        String sortBy = Contract.Currency.NAME;
-        return new CursorLoader(this, uri, projection, null, null, sortBy);
+        // favourite currencies first, then alphabetically; optionally filtered by the search box
+        String sortBy = Contract.Currency.FAVOURITE + " DESC, " + Contract.Currency.NAME + " ASC";
+        String selection = null;
+        String[] selectionArgs = null;
+        if (!TextUtils.isEmpty(mSearchQuery)) {
+            selection = Contract.Currency.NAME + " LIKE ? OR " + Contract.Currency.ISO + " LIKE ? OR " + Contract.Currency.SYMBOL + " LIKE ?";
+            String like = "%" + mSearchQuery + "%";
+            selectionArgs = new String[] {like, like, like};
+        }
+        return new CursorLoader(this, uri, projection, selection, selectionArgs, sortBy);
     }
 
     @Override

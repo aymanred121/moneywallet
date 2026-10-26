@@ -24,6 +24,7 @@ import android.database.Cursor;
 import com.oriondev.moneywallet.model.Group;
 import com.oriondev.moneywallet.model.Money;
 import com.oriondev.moneywallet.storage.database.Contract;
+import com.oriondev.moneywallet.utils.CurrencyConverter;
 import com.oriondev.moneywallet.utils.DateUtils;
 
 import java.util.Date;
@@ -117,7 +118,7 @@ public class TransactionHeaderCursor extends AbstractHeaderCursor<TransactionHea
                 case INDEX_HEADER_END_DATE:
                     return DateUtils.getSQLDateTimeString(header.getEndDate());
                 case INDEX_HEADER_MONEY:
-                    return header.mMoney.toString();
+                    return CurrencyConverter.toBaseCurrencyIfMixed(header.mMoney).toString();
             }
         }
         return null;

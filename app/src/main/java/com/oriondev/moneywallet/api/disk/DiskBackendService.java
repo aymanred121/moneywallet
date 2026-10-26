@@ -77,7 +77,10 @@ public class DiskBackendService extends AbstractBackendServiceDelegate {
 
     @Override
     public void setup(final ComponentActivity activity) throws BackendException {
-        final ActivityResultLauncher<String> launcher = activity.registerForActivityResult(
+        // the registry is used directly because this method is called after the activity is
+        // already resumed (registerForActivityResult would throw an IllegalStateException)
+        final ActivityResultLauncher<String> launcher = activity.getActivityResultRegistry().register(
+                "DiskBackendService::RequestPermission",
                 new ActivityResultContracts.RequestPermission(),
                 new ActivityResultCallback<Boolean>() {
                     @Override

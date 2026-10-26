@@ -62,6 +62,8 @@ public class TransactionCursorAdapter extends AbstractCursorAdapter<RecyclerView
     private int mIndexTransactionDate;
     private int mIndexTransactionMoney;
     private int mIndexCurrency;
+    private int mIndexOriginalCurrency;
+    private int mIndexOriginalMoney;
 
     private MoneyFormatter mMoneyFormatter;
 
@@ -86,6 +88,8 @@ public class TransactionCursorAdapter extends AbstractCursorAdapter<RecyclerView
         mIndexTransactionDate = cursor.getColumnIndex(Contract.Transaction.DATE);
         mIndexTransactionMoney = cursor.getColumnIndex(Contract.Transaction.MONEY);
         mIndexCurrency = cursor.getColumnIndex(Contract.Transaction.WALLET_CURRENCY);
+        mIndexOriginalCurrency = cursor.getColumnIndex(Contract.Transaction.CURRENCY);
+        mIndexOriginalMoney = cursor.getColumnIndex(Contract.Transaction.ORIGINAL_MONEY);
     }
 
     @Override
@@ -111,6 +115,22 @@ public class TransactionCursorAdapter extends AbstractCursorAdapter<RecyclerView
         }
         Date date = DateUtils.getDateFromSQLDateTimeString(cursor.getString(mIndexTransactionDate));
         DateFormatter.applyDate(holder.mDateTextView, date);
+        // when the amount has been entered in a currency different from the wallet one,
+        // show the original amount in the secondary line so both values are visible
+        String originalCurrency = mIndexOriginalCurrency >= 0 && !cursor.isNull(mIndexOriginalCurrency) ? cursor.getString(mIndexOriginalCurrency) : null;
+        if (originalCurrency != null && currency != null && !originalCurrency.equals(currency.getIso())
+                && mIndexOriginalMoney >= 0 && !cursor.isNull(mIndexOriginalMoney)) {
+            CurrencyUnit original = CurrencyManager.getCurrency(originalCurrency);
+            if (original != null) {
+                String amount = original.getIso() + " " + mMoneyFormatter.getNotTintedString(original, cursor.getLong(mIndexOriginalMoney), MoneyFormatter.CurrencyMode.ALWAYS_HIDDEN);
+                CharSequence description = holder.mSecondaryTextView.getText();
+                if (description == null || description.length() == 0) {
+                    holder.mSecondaryTextView.setText(amount);
+                } else {
+                    holder.mSecondaryTextView.setText(description + "  \u2022  " + amount);
+                }
+            }
+        }
     }
 
     private void onBindHeaderViewHolder(HeaderViewHolder holder, Cursor cursor) {

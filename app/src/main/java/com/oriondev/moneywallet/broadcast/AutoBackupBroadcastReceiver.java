@@ -83,7 +83,7 @@ public class AutoBackupBroadcastReceiver extends BroadcastReceiver {
 
     private static PendingIntent createPendingIntent(Context context) {
         Intent intent = new Intent(context, AutoBackupBroadcastReceiver.class);
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     @Override

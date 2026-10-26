@@ -61,6 +61,12 @@ public class Contract {
     public static final class Transaction {
         public static final String ID = Schema.Transaction.ID;
         public static final String MONEY = Schema.Transaction.MONEY;
+        /** ISO code of the currency the user typed the amount in (null = wallet currency). */
+        public static final String CURRENCY = Schema.Transaction.CURRENCY;
+        /** Amount as typed by the user, in minor units of {@link #CURRENCY} (null = wallet currency). */
+        public static final String ORIGINAL_MONEY = Schema.Transaction.ORIGINAL_MONEY;
+        /** Exchange rate used to convert {@link #ORIGINAL_MONEY} into the wallet currency. */
+        public static final String EXCHANGE_RATE = Schema.Transaction.EXCHANGE_RATE;
         public static final String DATE = Schema.Transaction.DATE;
         public static final String DESCRIPTION = Schema.Transaction.DESCRIPTION;
         public static final String CATEGORY_ID = Schema.Transaction.CATEGORY;

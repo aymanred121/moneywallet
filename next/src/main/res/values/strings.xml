@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MoneyWallet</string>
+    <string name="widget_balance_label">MoneyWallet balance</string>
+    <string name="widget_description">Your balance and a one-tap add button</string>
+    <string name="review_channel_name">Spending review</string>
+    <string name="review_channel_description">Weekly and monthly spending summaries</string>
+    <string name="widget_safe_to_spend_label">Safe to spend</string>
+    <string name="widget_safe_to_spend_description">How much you can spend per day until payday</string>
+    <string name="widget_quick_add_label">Quick add</string>
+    <string name="widget_quick_add_description">One tap to add a transaction</string>
+    <string name="capture_service_label">MoneyWallet payment capture</string>
+    <string name="capture_channel_name">Captured payments</string>
+    <string name="capture_channel_description">Quiet notices when a payment is captured from Google Wallet or a bank app</string>
+    <string name="budget_channel_name">Budget alerts</string>
+    <string name="budget_channel_description">When a budget reaches 80% and 100%</string>
+</resources>

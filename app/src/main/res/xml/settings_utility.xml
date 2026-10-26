@@ -61,6 +61,10 @@
             android:title="@string/setting_title_exchange_rate_update"/>
 
         <com.oriondev.moneywallet.ui.preference.ThemedPreference
+            android:key="base_currency"
+            android:title="@string/setting_title_base_currency"/>
+
+        <com.oriondev.moneywallet.ui.preference.ThemedPreference
             android:key="currency_management"
             android:title="@string/setting_title_currency_management"
             android:summary="@string/setting_summary_currency_management"/>

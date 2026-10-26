@@ -25,9 +25,9 @@ package com.oriondev.moneywallet.storage.database.json;
 /*package-local*/ class JSONDatabase {
 
     /*package-local*/ static final int MIN_SUPPORTED_VERSION = 1;
-    /*package-local*/ static final int MAX_SUPPORTED_VERSION = 2;
+    /*package-local*/ static final int MAX_SUPPORTED_VERSION = 3;
 
-    /*package-local*/ static final int VERSION = 2;
+    /*package-local*/ static final int VERSION = 3;
 
     /*package-local*/ static class Header {
         /*package-local*/ static final String OBJECT = "header";
@@ -251,6 +251,9 @@ package com.oriondev.moneywallet.storage.database.json;
         /*package-local*/ static final String CONFIRMED = "confirmed";
         /*package-local*/ static final String COUNT_IN_TOTAL = "count_in_total";
         /*package-local*/ static final String TAG = "tag";
+        /*package-local*/ static final String CURRENCY = "currency";
+        /*package-local*/ static final String ORIGINAL_MONEY = "original_money";
+        /*package-local*/ static final String EXCHANGE_RATE = "exchange_rate";
         /*package-local*/ static final String LAST_EDIT = "last_edit";
         /*package-local*/ static final String DELETED = "deleted";
     }

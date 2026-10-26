@@ -292,6 +292,9 @@ public class SQLDatabaseImporter {
         contentValues.put(Schema.Transaction.CONFIRMED, transaction.mConfirmed);
         contentValues.put(Schema.Transaction.COUNT_IN_TOTAL, transaction.mCountInTotal);
         contentValues.put(Schema.Transaction.TAG, transaction.mTag);
+        contentValues.put(Schema.Transaction.CURRENCY, transaction.mCurrency);
+        contentValues.put(Schema.Transaction.ORIGINAL_MONEY, transaction.mOriginalMoney);
+        contentValues.put(Schema.Transaction.EXCHANGE_RATE, transaction.mExchangeRate);
         contentValues.put(Schema.Transaction.UUID, transaction.mUUID);
         contentValues.put(Schema.Transaction.LAST_EDIT, transaction.mLastEdit);
         contentValues.put(Schema.Transaction.DELETED, transaction.mDeleted);

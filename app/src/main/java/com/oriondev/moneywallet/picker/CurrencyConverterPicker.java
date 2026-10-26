@@ -154,9 +154,31 @@ public class CurrencyConverterPicker extends Fragment implements CurrencyConvert
         return mCurrency1 != null && mCurrency2 != null && mConversionRate != null;
     }
 
+    /**
+     * @return the current conversion rate (1 currency1 = rate currency2) or null if unknown.
+     */
+    public Double getConversionRate() {
+        if (mConversionRate != null && mConversionRate > 0d) {
+            return mConversionRate;
+        }
+        return null;
+    }
+
+    /**
+     * Reload the conversion rate from the local cache (e.g. after the rates have been refreshed).
+     * A rate manually entered by the user is preserved.
+     */
+    public void refreshRateFromCache() {
+        if (mConversionRate == null || mConversionRate == 0d) {
+            loadConversionRate(true);
+            fireCallbackSafely();
+        }
+    }
+
     public void setCurrency1(CurrencyUnit currencyUnit) {
+        boolean isCurrencyChanged = mCurrency1 != null && !mCurrency1.equals(currencyUnit);
         mCurrency1 = currencyUnit;
-        loadConversionRate(false);
+        loadConversionRate(isCurrencyChanged);
         fireCallbackSafely();
     }
 

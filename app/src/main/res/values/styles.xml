@@ -19,13 +19,205 @@
 
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="MoneyWalletAppTheme" parent="MaterialDrawerTheme.Light.DarkToolbar">
-        <!-- Customize your theme here. -->
+    <!-- Base application theme: Material 3 light base. Runtime colors are still driven by the
+         ThemeEngine (users can pick primary/accent + light/dark mode); this theme supplies the
+         M3 defaults, component shapes/typography and the attributes MaterialDrawer needs. -->
+    <style name="MoneyWalletAppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Color roles -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/md_on_primary</item>
+        <item name="colorPrimaryContainer">@color/md_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/md_on_primary_container</item>
+        <item name="colorPrimaryInverse">@color/md_inverse_primary</item>
+        <item name="colorSecondary">@color/md_secondary</item>
+        <item name="colorOnSecondary">@color/md_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/md_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/md_on_secondary_container</item>
+        <item name="colorTertiary">@color/md_tertiary</item>
+        <item name="colorOnTertiary">@color/md_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/md_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/md_on_tertiary_container</item>
+        <item name="colorError">@color/md_error</item>
+        <item name="colorOnError">@color/md_on_error</item>
+        <item name="colorErrorContainer">@color/md_error_container</item>
+        <item name="colorOnErrorContainer">@color/md_on_error_container</item>
+        <item name="colorSurface">@color/md_surface</item>
+        <item name="colorOnSurface">@color/md_on_surface</item>
+        <item name="colorSurfaceVariant">@color/md_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/md_on_surface_variant</item>
+        <item name="colorSurfaceDim">@color/md_surface_dim</item>
+        <item name="colorSurfaceBright">@color/md_surface_bright</item>
+        <item name="colorSurfaceContainerLowest">@color/md_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/md_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/md_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/md_surface_container_highest</item>
+        <item name="colorSurfaceInverse">@color/md_inverse_surface</item>
+        <item name="colorOnSurfaceInverse">@color/md_inverse_on_surface</item>
+        <item name="colorOutline">@color/md_outline</item>
+        <item name="colorOutlineVariant">@color/md_outline_variant</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/md_surface</item>
+        <item name="android:windowBackground">@color/md_surface</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <!-- status bar sits on the (dark) primary tone, keep light system icons -->
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Component styles -->
+        <item name="cardViewStyle">@style/Widget.MoneyWallet.CardView</item>
+        <item name="materialCardViewStyle">@style/Widget.MoneyWallet.MaterialCardView</item>
+        <item name="floatingActionButtonStyle">@style/Widget.MoneyWallet.FloatingActionButton</item>
+        <item name="materialButtonStyle">@style/Widget.MoneyWallet.Button</item>
+        <!-- Borderless styles are applied to AppCompatButton subclasses (ThemedCardButton), so keep an
+             AppCompat-compatible parent and only borrow M3 label-large typography. -->
+        <item name="borderlessButtonStyle">@style/Widget.MoneyWallet.Button.Borderless</item>
+        <item name="android:borderlessButtonStyle">@style/Widget.MoneyWallet.Button.Borderless</item>
+        <item name="buttonBarButtonStyle">@style/Widget.MoneyWallet.Button.Borderless</item>
+        <item name="android:buttonBarButtonStyle">@style/Widget.MoneyWallet.Button.Borderless</item>
+        <item name="chipStyle">@style/Widget.MoneyWallet.Chip.Assist</item>
+        <item name="tabStyle">@style/Widget.MoneyWallet.TabLayout</item>
+        <item name="toolbarStyle">@style/Widget.MoneyWallet.Toolbar</item>
+        <item name="appBarLayoutStyle">@style/Widget.MoneyWallet.AppBarLayout</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.MoneyWallet.BottomSheetDialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MoneyWallet.MaterialAlertDialog</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.MoneyWallet.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.MoneyWallet.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.MoneyWallet.LargeComponent</item>
+
+        <!-- Settings -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+
+        <!-- MaterialDrawer 6.x attributes (formerly inherited from MaterialDrawerTheme.Light.DarkToolbar) -->
+        <item name="drawerArrowStyle">@style/MaterialDrawer.DrawerArrowStyle</item>
+        <item name="material_drawer_background">@color/md_surface_container_low</item>
+        <item name="material_drawer_primary_text">@color/md_on_surface</item>
+        <item name="material_drawer_primary_icon">@color/md_on_surface_variant</item>
+        <item name="material_drawer_secondary_text">@color/md_on_surface_variant</item>
+        <item name="material_drawer_hint_text">@color/md_outline</item>
+        <item name="material_drawer_hint_icon">@color/md_outline</item>
+        <item name="material_drawer_divider">@color/md_outline_variant</item>
+        <item name="material_drawer_selected">@color/md_secondary_container</item>
+        <item name="material_drawer_selected_legacy">@color/md_secondary_container</item>
+        <item name="material_drawer_selected_text">@color/md_on_secondary_container</item>
+        <item name="material_drawer_header_selection_text">@color/md_on_primary_container</item>
+        <item name="material_drawer_header_selection_subtext">@color/md_on_primary_container</item>
+        <item name="material_drawer_legacy_style">false</item>
     </style>
+
+    <!-- ===== Shape scale ===== -->
+    <style name="ShapeAppearance.MoneyWallet.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+    <style name="ShapeAppearance.MoneyWallet.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearance.MoneyWallet.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="ShapeAppearance.MoneyWallet.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+    <style name="ShapeAppearance.MoneyWallet.ExtraLarge.Top" parent="ShapeAppearance.MoneyWallet.ExtraLarge">
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- ===== Components ===== -->
+    <!-- Cards: 12dp corners, tonal (no shadow) -->
+    <style name="Widget.MoneyWallet.CardView" parent="CardView">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardMaxElevation">0dp</item>
+        <item name="cardPreventCornerOverlap">false</item>
+        <item name="cardUseCompatPadding">false</item>
+    </style>
+    <style name="Widget.MoneyWallet.MaterialCardView" parent="Widget.Material3.CardView.Filled">
+        <item name="shapeAppearance">@style/ShapeAppearance.MoneyWallet.MediumComponent</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <!-- FAB: 16dp large-corner square shape -->
+    <style name="Widget.MoneyWallet.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="shapeAppearance">@style/ShapeAppearance.MoneyWallet.LargeComponent</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+        <item name="elevation">6dp</item>
+        <item name="borderWidth">0dp</item>
+    </style>
+
+    <!-- Buttons: full round -->
+    <style name="Widget.MoneyWallet.Button" parent="Widget.Material3.Button">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelLarge</item>
+    </style>
+    <style name="Widget.MoneyWallet.Button.TextButton" parent="Widget.Material3.Button.TextButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelLarge</item>
+    </style>
+    <style name="Widget.MoneyWallet.Button.Borderless" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelLarge</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+    <style name="Widget.MoneyWallet.Button.TonalButton" parent="Widget.Material3.Button.TonalButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+    </style>
+
+    <!-- Assist chip -->
+    <style name="Widget.MoneyWallet.Chip.Assist" parent="Widget.Material3.Chip.Assist">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+    </style>
+
+    <!-- Tabs -->
+    <style name="Widget.MoneyWallet.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabIndicator">@drawable/tab_indicator_m3</item>
+        <item name="tabTextAppearance">@style/TextAppearance.Material3.TitleSmall</item>
+    </style>
+
+    <!-- App bar: flat, tonal -->
+    <style name="Widget.MoneyWallet.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.Material3.TitleLarge</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.Material3.BodyMedium</item>
+    </style>
+    <style name="Widget.MoneyWallet.AppBarLayout" parent="Widget.Material3.AppBarLayout">
+        <item name="elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="liftOnScroll">false</item>
+    </style>
+
+    <!-- Bottom sheets: 28dp top corners -->
+    <style name="ThemeOverlay.MoneyWallet.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.MoneyWallet.BottomSheet</item>
+    </style>
+    <style name="Widget.MoneyWallet.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/ShapeAppearance.MoneyWallet.ExtraLarge.Top</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+    </style>
+
+    <!-- Dialogs: 28dp corners -->
+    <style name="ThemeOverlay.MoneyWallet.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.MoneyWallet.ExtraLarge</item>
+    </style>
+
+    <!-- ===== Type scale aliases (Roboto, M3 metrics) ===== -->
+    <style name="TextAppearance.MoneyWallet.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium" />
+    <style name="TextAppearance.MoneyWallet.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall" />
+    <style name="TextAppearance.MoneyWallet.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium" />
+    <style name="TextAppearance.MoneyWallet.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall" />
+    <style name="TextAppearance.MoneyWallet.TitleLarge" parent="TextAppearance.Material3.TitleLarge" />
+    <style name="TextAppearance.MoneyWallet.TitleMedium" parent="TextAppearance.Material3.TitleMedium" />
+    <style name="TextAppearance.MoneyWallet.TitleSmall" parent="TextAppearance.Material3.TitleSmall" />
+    <style name="TextAppearance.MoneyWallet.BodyLarge" parent="TextAppearance.Material3.BodyLarge" />
+    <style name="TextAppearance.MoneyWallet.BodyMedium" parent="TextAppearance.Material3.BodyMedium" />
+    <style name="TextAppearance.MoneyWallet.BodySmall" parent="TextAppearance.Material3.BodySmall" />
+    <style name="TextAppearance.MoneyWallet.LabelLarge" parent="TextAppearance.Material3.LabelLarge" />
+    <style name="TextAppearance.MoneyWallet.LabelMedium" parent="TextAppearance.Material3.LabelMedium" />
 
 </resources>

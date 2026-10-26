@@ -41,4 +41,7 @@ public class Transaction extends BaseItem {
     public boolean mConfirmed;
     public boolean mCountInTotal;
     public String mTag;
+    public String mCurrency;
+    public Long mOriginalMoney;
+    public Double mExchangeRate;
 }

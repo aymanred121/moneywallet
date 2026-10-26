@@ -25,7 +25,6 @@ import androidx.annotation.StringRes;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
-import com.github.rubensousa.bottomsheetbuilder.BottomSheetBuilder;
 import com.oriondev.moneywallet.R;
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.philliphsu.bottomsheetpickers.time.BottomSheetTimePickerDialog;
@@ -44,6 +43,11 @@ public class ThemedDialog {
         builder.negativeColor(theme.getColorAccent());
         builder.neutralColor(theme.getColorAccent());
         builder.widgetColor(theme.getColorAccent());
+        // M3 dialog surface: surface-container-high with on-surface / on-surface-variant text
+        builder.backgroundColor(theme.getDialogBackgroundColor());
+        builder.titleColor(theme.getTextColorPrimary());
+        builder.contentColor(theme.getTextColorSecondary());
+        builder.itemsColor(theme.getTextColorPrimary());
         return builder;
     }
 
@@ -70,13 +74,4 @@ public class ThemedDialog {
         return builder;
     }
 
-    public static BottomSheetBuilder buildBottomSheet(Context context) {
-        BottomSheetBuilder builder = new BottomSheetBuilder(context);
-        ITheme theme = ThemeEngine.getTheme();
-        builder.setBackgroundColor(theme.getDialogBackgroundColor());
-        builder.setTitleTextColor(theme.getTextColorPrimary());
-        builder.setItemTextColor(theme.getTextColorPrimary());
-        builder.setIconTintColor(theme.getIconColor());
-        return builder;
-    }
 }

@@ -28,7 +28,9 @@ package com.oriondev.moneywallet.ui.view.theme;
     COLOR_PRIMARY_DARK(1),
     COLOR_ACCENT(2),
     COLOR_WINDOW_BACKGROUND(3),
-    COLOR_WINDOW_FOREGROUND(4);
+    COLOR_WINDOW_FOREGROUND(4),
+    COLOR_SURFACE_CONTAINER(5),
+    COLOR_PRIMARY_CONTAINER(6);
 
     private int mValue;
 
@@ -50,6 +52,10 @@ package com.oriondev.moneywallet.ui.view.theme;
                 return theme.getColorAccent();
             case 4:
                 return theme.getColorWindowForeground();
+            case 5:
+                return theme.getColorSurfaceContainer();
+            case 6:
+                return theme.getColorPrimaryContainer();
             default:
                 return theme.getColorWindowBackground();
         }
@@ -67,6 +73,10 @@ package com.oriondev.moneywallet.ui.view.theme;
                 return COLOR_WINDOW_BACKGROUND;
             case 4:
                 return COLOR_WINDOW_FOREGROUND;
+            case 5:
+                return COLOR_SURFACE_CONTAINER;
+            case 6:
+                return COLOR_PRIMARY_CONTAINER;
             default:
                 return null;
         }

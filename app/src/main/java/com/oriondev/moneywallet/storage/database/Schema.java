@@ -190,6 +190,9 @@ package com.oriondev.moneywallet.storage.database;
         /*package-local*/ static final String CONFIRMED = "transaction_confirmed";
         /*package-local*/ static final String COUNT_IN_TOTAL = "transaction_count_in_total";
         /*package-local*/ static final String TAG = "transaction_tag";
+        /*package-local*/ static final String CURRENCY = "transaction_currency";
+        /*package-local*/ static final String ORIGINAL_MONEY = "transaction_original_money";
+        /*package-local*/ static final String EXCHANGE_RATE = "transaction_exchange_rate";
     }
 
     /*package-local*/ static final class TransactionPeople extends BaseTable {
@@ -539,6 +542,9 @@ package com.oriondev.moneywallet.storage.database;
             Transaction.CONFIRMED + " INTEGER NOT NULL DEFAULT 1, " +
             Transaction.COUNT_IN_TOTAL + " INTEGER NOT NULL DEFAULT 1, " +
             Transaction.TAG + " TEXT, " +
+            Transaction.CURRENCY + " TEXT, " +
+            Transaction.ORIGINAL_MONEY + " INTEGER, " +
+            Transaction.EXCHANGE_RATE + " REAL, " +
             Transaction.UUID + " TEXT NOT NULL UNIQUE, " +
             Transaction.LAST_EDIT + " INTEGER NOT NULL, " +
             Transaction.DELETED + " INTEGER NOT NULL DEFAULT 0, " +
@@ -772,4 +778,13 @@ package com.oriondev.moneywallet.storage.database;
 
     /*package-local*/ static final String CREATE_WALLET_INDEX_COLUMN = "ALTER TABLE " +
             Wallet.TABLE + " ADD COLUMN " + Wallet.INDEX + " INTEGER NOT NULL DEFAULT 0";
+
+    /*package-local*/ static final String CREATE_TRANSACTION_CURRENCY_COLUMN = "ALTER TABLE " +
+            Transaction.TABLE + " ADD COLUMN " + Transaction.CURRENCY + " TEXT";
+
+    /*package-local*/ static final String CREATE_TRANSACTION_ORIGINAL_MONEY_COLUMN = "ALTER TABLE " +
+            Transaction.TABLE + " ADD COLUMN " + Transaction.ORIGINAL_MONEY + " INTEGER";
+
+    /*package-local*/ static final String CREATE_TRANSACTION_EXCHANGE_RATE_COLUMN = "ALTER TABLE " +
+            Transaction.TABLE + " ADD COLUMN " + Transaction.EXCHANGE_RATE + " REAL";
 }

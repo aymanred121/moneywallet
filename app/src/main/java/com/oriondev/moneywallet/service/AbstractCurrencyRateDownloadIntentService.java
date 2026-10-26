@@ -19,8 +19,8 @@
 
 package com.oriondev.moneywallet.service;
 
-import android.app.Activity;
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -28,6 +28,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.oriondev.moneywallet.R;
+import com.oriondev.moneywallet.service.exchangerateapi.ExchangeRateApiCurrencyRateDownloadIntentService;
 import com.oriondev.moneywallet.service.openexchangerates.OpenExchangeRatesCurrencyRateDownloadIntentService;
 import com.oriondev.moneywallet.broadcast.LocalAction;
 import com.oriondev.moneywallet.model.CurrencyUnit;
@@ -42,14 +43,33 @@ import com.oriondev.moneywallet.utils.Utils;
  */
 public abstract class AbstractCurrencyRateDownloadIntentService extends IntentService {
 
-    public static Intent buildIntent(Activity activity) {
+    public static Intent buildIntent(Context context) {
         int service = PreferenceManager.getCurrentExchangeRateService();
         switch (service) {
             case PreferenceManager.SERVICE_OPEN_EXCHANGE_RATE:
-                return new Intent(activity, OpenExchangeRatesCurrencyRateDownloadIntentService.class);
+                return new Intent(context, OpenExchangeRatesCurrencyRateDownloadIntentService.class);
+            case PreferenceManager.SERVICE_EXCHANGE_RATE_API:
+                return new Intent(context, ExchangeRateApiCurrencyRateDownloadIntentService.class);
             default:
                 throw new IllegalStateException("Unknown exchange rate service: " + service);
         }
+    }
+
+    /**
+     * Refresh the exchange rates in background if the cached ones are older than the given age.
+     * @return true if a refresh has been started.
+     */
+    public static boolean refreshIfStale(Context context, long maxAgeMillis) {
+        long lastUpdate = PreferenceManager.getLastExchangeRateUpdateTimestamp();
+        if (System.currentTimeMillis() - lastUpdate > maxAgeMillis) {
+            try {
+                context.startService(buildIntent(context));
+                return true;
+            } catch (RuntimeException ignore) {
+                // the system may refuse to start a background service, nothing we can do
+            }
+        }
+        return false;
     }
 
     private ExchangeRateCache mCache;
@@ -63,19 +83,18 @@ public abstract class AbstractCurrencyRateDownloadIntentService extends IntentSe
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         mBuilder = new NotificationCompat.Builder(getBaseContext(), NotificationContract.NOTIFICATION_CHANNEL_EXCHANGE_RATE)
-                .setSmallIcon(Utils.isAtLeastLollipop() ? R.drawable.ic_notification : R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(getString(R.string.notification_title_download_exchange_rates))
                 .setProgress(0, 0, true)
                 .setCategory(NotificationCompat.CATEGORY_PROGRESS);
-        startForeground(NotificationContract.NOTIFICATION_ID_EXCHANGE_RATE_PROGRESS, mBuilder.build());
+        // the download is short: run it silently in background (no foreground service,
+        // which would require a persistent notification and a dedicated permission)
         Exception exception = null;
         try {
             updateExchangeRates();
             sendBroadcastMessage();
         } catch (Exception e) {
             exception = e;
-        } finally {
-            stopForeground(true);
         }
         if (exception != null) {
             showError(exception.getMessage());
@@ -97,12 +116,11 @@ public abstract class AbstractCurrencyRateDownloadIntentService extends IntentSe
     protected void setCurrentProgress(String operation, int percentage) {
         mBuilder.setContentText(operation)
                 .setProgress(100, percentage, false);
-        startForeground(NotificationContract.NOTIFICATION_ID_EXCHANGE_RATE_PROGRESS, mBuilder.build());
     }
 
     private void showError(String error) {
         mBuilder = new NotificationCompat.Builder(getBaseContext(), NotificationContract.NOTIFICATION_CHANNEL_ERROR)
-                .setSmallIcon(Utils.isAtLeastLollipop() ? R.drawable.ic_notification : R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(getString(R.string.notification_title_download_exchange_rates))
                 .setContentText(getString(R.string.notification_content_error_message, error))
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(getString(R.string.notification_content_error_message, error)))

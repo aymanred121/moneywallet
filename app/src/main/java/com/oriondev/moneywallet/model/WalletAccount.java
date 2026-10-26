@@ -48,7 +48,7 @@ public class WalletAccount extends ProfileDrawerItem {
     }
 
     @Override
-    public WalletAccount withName(String name) {
+    public WalletAccount withName(CharSequence name) {
         super.withName(name);
         return this;
     }

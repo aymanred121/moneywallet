@@ -44,6 +44,7 @@ public class ThemedCardView extends CardView implements ThemeEngine.ThemeConsume
 
     @Override
     public void onApplyTheme(ITheme theme) {
-        setBackgroundColor(theme.getColorCardBackground());
+        // use the CardView API so the 12dp M3 corner radius is preserved
+        setCardBackgroundColor(theme.getColorCardBackground());
     }
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 8-11 auto backup: only when the backup is encrypted client-side (device has a lock screen). -->
+<full-backup-content>
+    <include domain="database" path="moneywallet-next.db" requireFlags="clientSideEncryption" />
+    <include domain="file" path="datastore/settings.preferences_pb" requireFlags="clientSideEncryption" />
+</full-backup-content>

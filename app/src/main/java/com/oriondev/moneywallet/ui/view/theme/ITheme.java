@@ -56,6 +56,18 @@ public interface ITheme {
 
     int getErrorColor();
 
+    /** M3 primary-container role derived from the primary color (FAB, drawer header, chips). */
+    int getColorPrimaryContainer();
+
+    /** M3 on-primary-container role (text/icons over {@link #getColorPrimaryContainer()}). */
+    int getColorOnPrimaryContainer();
+
+    /** M3 surface-container role (section headers, tonal panels). */
+    int getColorSurfaceContainer();
+
+    /** M3 outline-variant role (dividers, decorative strokes). */
+    int getColorOutlineVariant();
+
     int getDialogBackgroundColor();
 
     int getDrawerBackgroundColor();

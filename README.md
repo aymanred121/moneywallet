@@ -1,83 +1,219 @@
-# MoneyWallet - Expense Manager [BETA]
-[![License](https://img.shields.io/badge/license-GPL%20V3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
-[![Release](https://img.shields.io/github/release/AndreAle94/moneywallet.svg)](https://github.com/AndreAle94/moneywallet/releases/latest)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/andreale94)
+# MoneyWallet Next
 
-[<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" 
-      alt="Download from Google Play" 
-      height="80">](https://play.google.com/store/apps/details?id=com.oriondev.moneywallet)
-[<img src="https://f-droid.org/badge/get-it-on.png"
-      alt="Get it on F-Droid"
-      height="80">](https://f-droid.org/en/packages/com.oriondev.moneywallet)
-      
-![Showcase](https://github.com/AndreAle94/moneywallet/raw/master/pictures/showcase.png)
+[![Android CI](https://github.com/aymanred121/moneywallet/actions/workflows/android.yml/badge.svg)](https://github.com/aymanred121/moneywallet/actions/workflows/android.yml)
+[![License](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](LICENSE.md)
+![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7F52FF?logo=kotlin&logoColor=white)
 
-MoneyWallet is an application designed to help you keep track of your expenses. This repository contains the source code of the latest version, completely rewritten from scratch.
+A calm, private, multi-currency expense manager for Android, rebuilt from the ground up with Kotlin,
+Jetpack Compose and Material 3.
 
-### Redistributing this app as your own is NOT permitted.
+> This is an **unofficial fork** of [MoneyWallet](https://github.com/AndreAle94/moneywallet) by
+> [AndreAle94](https://github.com/AndreAle94). The original app lives on in [`app/`](app); the
+> rewrite lives in [`next/`](next). Both read and write the same `.mwbx` backups, so your data moves
+> freely between them.
 
-# Table of Contents
+<p align="center">
+  <img src="docs/screenshots/home.png" width="250" alt="Home dashboard">
+  <img src="docs/screenshots/editor.png" width="250" alt="Quick add">
+  <img src="docs/screenshots/analytics.png" width="250" alt="Analytics">
+</p>
 
-1. [History](#history)
-2. [Donations](#donations)
-3. [Build](#build)
-4. [FAQ](#faq)
-5. [Credits](#credits)
-6. [License](#license)
+<p align="center"><sub>All screenshots use a made-up demo dataset.</sub></p>
 
-## History
-I have been working behind this project for a long time, originally born as a tool to learn Android development, it has evolved over time and has recently been completely revised as a university project for the DIMA course at Politecnico di Milano.
-As you may have noticed, the previous version on the PlayStore required a small in-app purchase to handle more than just one wallet. The idea was to invest the money earned to pay for my studies, unfortunately among the interest rates of the PlayStore and the local taxes of the individual countries the profit was practically derisory. I did not had the opportunity to continue the development with continuity due to the university and the little free time available. Only recently I had the opportunity to get the project in hand and I decided to make it open source. In this way, anyone who wants can contribute.
+## Contents
 
-## Donations
-This project is completely free, I decided to completely remove the in-app purchase in favor of a donation policy. It contains no advertising and never will contain it. If you find this application useful you may consider the option of offering me a beer, in real life or through a donation. It would be a very appreciated gesture to support my work.
+- [Features](#features)
+- [Download](#download)
+- [Build from source](#build-from-source)
+- [Continuous integration](#continuous-integration)
+- [Project layout](#project-layout)
+- [Privacy](#privacy)
+- [Credits and license](#credits-and-license)
 
-- PayPal: https://www.paypal.me/andreale94
-- BTC: 1J3APoaFT2jcqRzpb8bEt2rwUn3mDpWE5U
-- BCH: qzaw9naw5c367r4du2eg6fvmkr7smwagru53lt67zl
-- ETH: 0x4ee996Bf75a89c75B18b4f0509c8c77B87D81392
-- LTC: LZW1AUMWN4BdUvSu8fujEYVLgqWH2HsLZs
+## Features
 
-## Build
-You can compile the application very simply: just clone this repository locally to your computer and Android Studio will take care of the rest.
-You have four different options to build it with two choices.
-The first choice is which version you want to build:
+### A home screen that answers "how am I doing?"
 
-- proprietary: this build flavor is designed to integrate Google Drive and Dropbox for a better user experience. It contains proprietary libraries (not open source) and requires the inclusion of valid api-keys to use these services. These keys must be registered in the file called gradle.properties in the root folder of the project before compiling.
-- floss: this build flavor is designed to contain only open source code and for this reason the integration with Google Drive and Dropbox has been removed.
+Your balance, the current pay cycle at a glance and what came in versus what went out. The month can
+start on any day (your payday), and every comparison is like-for-like: on day 10 you are compared with
+the first 10 days of the previous cycle, not the whole of it. A pacing line projects where you will
+land and how much you can safely spend per day. Long-press the balance (or tap the eye) to hide every
+amount in the app.
 
-The second choice is which map provider you want to use and you can choose between:
+<p align="center">
+  <img src="docs/screenshots/home.png" width="250" alt="Home">
+  <img src="docs/screenshots/home_more.png" width="250" alt="Home, budgets, goals and recent">
+</p>
 
-- gmap: this build flavor uses Google Map as map provider and requires you to provide a valid API-key. This key must be registered in the file called gradle.properties in the root folder of the project before compiling.
-- osm: this build flavor uses OpenStreetMap as map provider.
+### Quick add
 
-To decide what kind of build to compile, use the appropriate menu of gradle to choose the desired combination of build flavors.
-If you want to build only open source code (e.g. for the F-Droid market) you should use 'floss' and 'osm'.
+Type the amount on a keypad that sits right under it, then tap one of your most used categories: the
+transaction is saved. Descriptions you have used before suggest their category, any currency can be
+entered (it is converted into the wallet's currency with the latest rate, which you can override), and
+the less common fields stay tucked under *More options*.
 
-The current release in Google Play Store uses 'proprietary' and 'osm' with some changes to integrate also the Crashlytics framework and the In-App billing library.
+<p align="center">
+  <img src="docs/screenshots/editor.png" width="250" alt="Quick add editor">
+</p>
 
-## FAQ
-1. why does the precompiled binary contain a huge icon pack while there are only a few icons in the source code?
-  The icon pack license clearly states that the icons can not be distributed publicly. If you want to have the same package of icons you will have to buy them on their website. The few icons in the repository come from their small free icon pack with a license that allows their free use.
-2. Is this project still in development? Currently I do not have much time to devote to the project, as already explained I am a university student close to graduation and very busy. I can work on it from time to time but I can't promise continued and lasting support.
-3. Can i contribute to this project? Oh yes! You can freely fork this project and open new pull requests. Translations in other languages are also welcome (you will be credited within the application).
+### Transactions
 
-## Credits
-- [Adam Lapinski](http://www.yeti-designs.com): author of the awesome logo.
-- [Freepik](https://www.freepik.com): source of first-start images.
-- [RoundIcons](https://roundicons.com): source of the internal icon-pack.
+Grouped by day with daily totals, filtered by wallet, searchable, and browsed cycle by cycle. Swipe a
+row to delete it with undo. Transfers between your own wallets are never counted as spending or income.
 
-## License
-    Copyright (c) 2018.
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<p align="center">
+  <img src="docs/screenshots/transactions.png" width="250" alt="Transactions">
+</p>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+### Analytics
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Where the money went, the daily trend, a like-for-like comparison with the previous period, net worth
+over the last year, subscriptions and bills detected from repeating expenses, and your top merchants.
+
+<p align="center">
+  <img src="docs/screenshots/analytics.png" width="250" alt="Spending by category">
+  <img src="docs/screenshots/analytics_3.png" width="250" alt="Net worth and subscriptions">
+  <img src="docs/screenshots/analytics_4.png" width="250" alt="Top merchants">
+</p>
+
+### Weekly and monthly reviews
+
+A short story of the period that just ended: what you spent, the top categories, the biggest expense,
+upcoming bills and a few insights that are only shown when they matter (an unusually large expense, a
+category that moved a lot). A notification brings it to you when the week or the cycle ends.
+
+<p align="center">
+  <img src="docs/screenshots/review.png" width="250" alt="Review">
+</p>
+
+### Recaps
+
+Big-number cards for a cycle or a whole year (total spent, top category, biggest day, savings rate),
+each one shareable as an image.
+
+<p align="center">
+  <img src="docs/screenshots/recap.png" width="250" alt="Recap">
+</p>
+
+### Budgets
+
+Overall or per-category limits for any period, across wallets in different currencies, with alerts at
+80% and 100%.
+
+<p align="center">
+  <img src="docs/screenshots/budgets.png" width="250" alt="Budgets">
+</p>
+
+### Savings goals
+
+Track a goal manually or link it to a wallet, and see how much to put aside each month to reach it by
+the target date.
+
+<p align="center">
+  <img src="docs/screenshots/goals.png" width="250" alt="Savings goals">
+</p>
+
+### Automatic payment capture
+
+Payment notifications from wallet apps and bank SMS (English and Arabic) are read **on the device**
+and turned into ready-to-add transactions. The transaction type in the message decides whether it is
+money in or money out, the amount and counterparty come from the message's fields, and chats that
+merely mention money are ignored. Teach it a message type it does not know with one tap, or import
+bank SMS that arrived before capture was switched on.
+
+<p align="center">
+  <img src="docs/screenshots/captures.png" width="250" alt="Payments to review">
+  <img src="docs/screenshots/capture_settings.png" width="250" alt="Capture settings">
+</p>
+
+### Make it yours
+
+129 Material symbols in any colour (plus the classic icon set and letter icons) for categories,
+wallets and goals; light, dark and dynamic colour themes; home-screen widgets for the balance,
+safe-to-spend and one-tap quick add.
+
+<p align="center">
+  <img src="docs/screenshots/icons.png" width="250" alt="Icon picker">
+  <img src="docs/screenshots/home_dark.png" width="250" alt="Dark theme">
+</p>
+
+### And the essentials
+
+- **Multi-currency** wallets with automatic exchange rates (no API key needed) and a global currency
+  for totals.
+- **Backups** in the original `.mwbx` format, compatible with the legacy app, plus **CSV**
+  export and import (with column mapping and duplicate detection).
+- **Biometric lock**, a hidden balance mode and no content in the recent-apps preview while locked.
+- **No ads, no accounts, no tracking.**
+
+## Download
+
+- **Releases:** APKs are attached to each [release](https://github.com/aymanred121/moneywallet/releases).
+- **Latest build:** every push builds an APK; open the most recent run under
+  [Actions](https://github.com/aymanred121/moneywallet/actions/workflows/android.yml) and download the
+  `moneywallet-next` artifact.
+
+The app installs as `com.oriondev.moneywallet.next`, next to the original MoneyWallet if you have it.
+Restore a `.mwbx` backup from the welcome screen to bring your data over.
+
+## Build from source
+
+Requirements: JDK 17 and the Android SDK (platform 35).
+
+```bash
+./gradlew :next:assembleDebug        # next/build/outputs/apk/debug/next-debug.apk
+./gradlew :next:testDebugUnitTest    # unit, Robolectric, database and migration tests
+```
+
+Release builds are signed when `next/signing.properties` exists (it is git-ignored):
+
+```properties
+storeFile=signing/release.jks
+storePassword=…
+keyAlias=…
+keyPassword=…
+```
+
+The original app still builds with `./gradlew :app:assembleFlossOsmDebug`.
+
+## Continuous integration
+
+[`.github/workflows/android.yml`](.github/workflows/android.yml) runs the unit tests and builds the APK
+on every push and pull request, and attaches the APK to a GitHub release when a `v*` tag is pushed.
+
+Without secrets the workflow produces a debug-signed APK. To get release-signed builds that update an
+installed copy in place, add these repository secrets:
+
+| Secret | Value |
+| --- | --- |
+| `KEYSTORE_BASE64` | `base64 -i release.jks` |
+| `KEYSTORE_PASSWORD` | keystore password |
+| `KEY_ALIAS` | key alias |
+| `KEY_PASSWORD` | key password |
+
+## Project layout
+
+```
+app/    the original MoneyWallet (Java, Android Views), kept for reference and parity
+next/   the rewrite: Kotlin, Jetpack Compose, Material 3, Room, DataStore, WorkManager, Glance
+  core/       money, dates, icons
+  data/       Room database and migrations, backups, CSV, exchange rates, preferences
+  domain/     periods, analytics, pacing, insights, subscriptions
+  capture/    notification and SMS payment capture
+  ui/         screens, components, theme and motion tokens
+  widget/     home-screen widgets
+```
+
+## Privacy
+
+Everything stays on your phone. The only network request is the daily download of public exchange
+rates. Payment capture reads notifications only from the apps you choose, parses them on the device and
+records nothing until you tap *Add*. Android's cloud backup only includes your data when the device
+can encrypt it end to end.
+
+## Credits and license
+
+MoneyWallet was created by [AndreAle94](https://github.com/AndreAle94); please consider supporting the
+original project. This fork is distributed under the same license, the
+[GNU General Public License v3.0](LICENSE.md).

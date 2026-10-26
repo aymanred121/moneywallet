@@ -298,6 +298,12 @@ public class SQLDatabaseExporter {
         object.mConfirmed = cursor.getInt(cursor.getColumnIndex(Schema.Transaction.CONFIRMED)) == 1;
         object.mCountInTotal = cursor.getInt(cursor.getColumnIndex(Schema.Transaction.COUNT_IN_TOTAL)) == 1;
         object.mTag = cursor.getString(cursor.getColumnIndex(Schema.Transaction.TAG));
+        int indexCurrency = cursor.getColumnIndex(Schema.Transaction.CURRENCY);
+        int indexOriginalMoney = cursor.getColumnIndex(Schema.Transaction.ORIGINAL_MONEY);
+        int indexExchangeRate = cursor.getColumnIndex(Schema.Transaction.EXCHANGE_RATE);
+        object.mCurrency = indexCurrency >= 0 ? cursor.getString(indexCurrency) : null;
+        object.mOriginalMoney = indexOriginalMoney >= 0 && !cursor.isNull(indexOriginalMoney) ? cursor.getLong(indexOriginalMoney) : null;
+        object.mExchangeRate = indexExchangeRate >= 0 && !cursor.isNull(indexExchangeRate) ? cursor.getDouble(indexExchangeRate) : null;
         object.mUUID = cursor.getString(cursor.getColumnIndex(Schema.Transaction.UUID));
         object.mLastEdit = cursor.getLong(cursor.getColumnIndex(Schema.Transaction.LAST_EDIT));
         object.mDeleted = cursor.getInt(cursor.getColumnIndex(Schema.Transaction.DELETED)) == 1;

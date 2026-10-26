@@ -1,0 +1,87 @@
+name: Android CI
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Test and build APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HAS_SIGNING: ${{ secrets.KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit tests
+        run: ./gradlew :next:testDebugUnitTest --stacktrace
+
+      - name: Restore signing key
+        if: env.HAS_SIGNING == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          mkdir -p next/signing
+          echo "$KEYSTORE_BASE64" | base64 --decode > next/signing/release.jks
+          {
+            echo "storeFile=signing/release.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > next/signing.properties
+
+      - name: Build release APK (signed)
+        if: env.HAS_SIGNING == 'true'
+        run: |
+          ./gradlew :next:assembleRelease
+          mkdir -p dist
+          cp next/build/outputs/apk/release/next-release.apk "dist/moneywallet-next-${GITHUB_REF_NAME//\//-}.apk"
+
+      - name: Build debug APK (no signing secrets)
+        if: env.HAS_SIGNING != 'true'
+        run: |
+          ./gradlew :next:assembleDebug
+          mkdir -p dist
+          cp next/build/outputs/apk/debug/next-debug.apk "dist/moneywallet-next-${GITHUB_REF_NAME//\//-}-debug.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: moneywallet-next
+          path: dist/*.apk
+          if-no-files-found: error
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: next/build/reports/tests/
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.apk
+          generate_release_notes: true

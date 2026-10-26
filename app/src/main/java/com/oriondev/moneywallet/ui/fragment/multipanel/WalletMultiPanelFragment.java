@@ -50,6 +50,7 @@ import com.oriondev.moneywallet.ui.fragment.base.MultiPanelAppBarItemFragment;
 import com.oriondev.moneywallet.ui.fragment.base.SecondaryPanelFragment;
 import com.oriondev.moneywallet.ui.fragment.secondary.WalletItemFragment;
 import com.oriondev.moneywallet.ui.view.AdvancedRecyclerView;
+import com.oriondev.moneywallet.utils.CurrencyConverter;
 import com.oriondev.moneywallet.utils.MoneyFormatter;
 
 /**
@@ -167,7 +168,7 @@ public class WalletMultiPanelFragment extends MultiPanelAppBarItemFragment imple
                     money.addMoney(currency, amount);
                 }
             }
-            mMoneyFormatter.applyNotTinted(mTotalMoneyTextView, money);
+            mMoneyFormatter.applyNotTinted(mTotalMoneyTextView, CurrencyConverter.toBaseCurrencyIfMixed(money));
         }
         mAdapter.changeCursor(cursor);
         if (cursor != null && cursor.getCount() > 0) {

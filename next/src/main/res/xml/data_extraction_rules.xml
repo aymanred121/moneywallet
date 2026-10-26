@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ backup rules. Cloud backup only runs when the device can encrypt it end-to-end with
+  the lock screen credential; device-to-device transfer keeps everything. Exchange-rate cache is
+  never worth backing up (it is re-downloaded).
+-->
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapabilities="true">
+        <include domain="database" path="moneywallet-next.db" />
+        <include domain="file" path="datastore/settings.preferences_pb" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="moneywallet-next.db" />
+        <include domain="file" path="datastore/settings.preferences_pb" />
+    </device-transfer>
+</data-extraction-rules>

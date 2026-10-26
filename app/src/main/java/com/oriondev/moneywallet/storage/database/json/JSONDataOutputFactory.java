@@ -307,6 +307,15 @@ import java.util.HashMap;
         object.put(JSONDatabase.Transaction.CONFIRMED, transaction.mConfirmed);
         object.put(JSONDatabase.Transaction.COUNT_IN_TOTAL, transaction.mCountInTotal);
         object.put(JSONDatabase.Transaction.TAG, transaction.mTag);
+        if (transaction.mCurrency != null) {
+            object.put(JSONDatabase.Transaction.CURRENCY, transaction.mCurrency);
+        }
+        if (transaction.mOriginalMoney != null) {
+            object.put(JSONDatabase.Transaction.ORIGINAL_MONEY, transaction.mOriginalMoney);
+        }
+        if (transaction.mExchangeRate != null) {
+            object.put(JSONDatabase.Transaction.EXCHANGE_RATE, transaction.mExchangeRate);
+        }
         object.put(JSONDatabase.Transaction.ID, transaction.mUUID);
         object.put(JSONDatabase.Transaction.LAST_EDIT, transaction.mLastEdit);
         object.put(JSONDatabase.Transaction.DELETED, transaction.mDeleted);

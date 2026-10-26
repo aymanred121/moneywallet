@@ -492,6 +492,18 @@
     <string name="setting_summary_exchange_rate_api_key_missing">"Api-key is missing"</string>
     <string name="setting_title_exchange_rate_update">"Update exchange rates"</string>
     <string name="setting_summary_exchange_rate_update">"Last update: %s"</string>
+    <string name="setting_title_base_currency">"Global currency"</string>
+    <string name="setting_summary_base_currency">"Totals that mix currencies are converted to %s"</string>
+    <string name="setting_summary_base_currency_missing">"Choose the currency used to display mixed-currency totals"</string>
+    <string name="setting_item_utility_exchange_rates_service_era" translatable="false">"ExchangeRate-API (free, no key)"</string>
+    <string name="hint_original_amount">"Original amount"</string>
+    <string name="hint_search_currency">"Search currency (name or code)"</string>
+    <string name="hint_converted_amount">"Converted amount"</string>
+    <string name="label_exchange_rate_format">"1 %1$s = %2$s %3$s"</string>
+    <string name="label_exchange_rate_unknown">"Exchange rate unavailable, tap to enter it"</string>
+    <string name="error_input_missing_exchange_rate">"No exchange rate for %1$s → %2$s. Refresh the rates or enter one manually."</string>
+    <string name="action_change_currency">"Change currency"</string>
+    <string name="label_in_wallet_currency">"in wallet currency"</string>
     <string name="setting_title_currency_management">"Manage currencies"</string>
     <string name="setting_summary_currency_management">"Add custom currencies"</string>
     <string name="setting_subtitle_user_interface">"Personalize it as you want"</string>

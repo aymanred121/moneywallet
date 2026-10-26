@@ -47,6 +47,19 @@ import androidx.annotation.FloatRange;
     }
 
     @ColorInt
+    /**
+     * Blends {@code color} towards {@code target} by {@code ratio} (0 = color, 1 = target).
+     * Used to derive M3 container tones from a single seed color.
+     */
+    /*package-local*/ static int blendColors(@ColorInt int color, @ColorInt int target, @FloatRange(from = 0.0f, to = 1.0f) float ratio) {
+        float inverse = 1f - ratio;
+        int a = Math.round(Color.alpha(color) * inverse + Color.alpha(target) * ratio);
+        int r = Math.round(Color.red(color) * inverse + Color.red(target) * ratio);
+        int g = Math.round(Color.green(color) * inverse + Color.green(target) * ratio);
+        int b = Math.round(Color.blue(color) * inverse + Color.blue(target) * ratio);
+        return Color.argb(a, r, g, b);
+    }
+
     /*package-local*/ static int darkenColor(@ColorInt int color) {
         return shiftColor(color, 0.9f);
     }

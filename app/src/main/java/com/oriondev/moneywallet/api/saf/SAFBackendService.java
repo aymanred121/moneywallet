@@ -82,7 +82,10 @@ public class SAFBackendService extends AbstractBackendServiceDelegate {
 
     @Override
     public void setup(final ComponentActivity activity) {
-        activity.registerForActivityResult(
+        // the registry is used directly because this method is called after the activity is
+        // already resumed (registerForActivityResult would throw an IllegalStateException)
+        activity.getActivityResultRegistry().register(
+            "SAFBackendService::DocumentTree",
             new DocumentTreeContract(),
             new ActivityResultCallback<Uri>() {
                 @Override

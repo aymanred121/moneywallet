@@ -40,7 +40,10 @@ import android.view.ViewGroup;
 
 import com.oriondev.moneywallet.R;
 import com.oriondev.moneywallet.broadcast.LocalAction;
+import com.oriondev.moneywallet.model.CurrencyUnit;
 import com.oriondev.moneywallet.model.LockMode;
+import com.oriondev.moneywallet.storage.database.DataContentProvider;
+import com.oriondev.moneywallet.utils.CurrencyConverter;
 import com.oriondev.moneywallet.service.AbstractCurrencyRateDownloadIntentService;
 import com.oriondev.moneywallet.storage.preference.PreferenceManager;
 import com.oriondev.moneywallet.ui.activity.CurrencyListActivity;
@@ -57,6 +60,7 @@ import java.util.Date;
 public class UtilitySettingFragment extends PreferenceFragmentCompat {
 
     private static final int REQUEST_CODE_LOCK_ACTIVITY = 8239;
+    private static final int REQUEST_CODE_BASE_CURRENCY = 8240;
 
     private ThemedListPreference mDailyReminderPreference;
     private ThemedListPreference mSecurityModeListPreference;
@@ -64,6 +68,7 @@ public class UtilitySettingFragment extends PreferenceFragmentCompat {
     private ThemedListPreference mExchangeRateServiceListPreference;
     private ThemedInputPreference mExchangeRateCustomApiKey;
     private Preference mExchangeRateUpdatePreference;
+    private Preference mBaseCurrencyPreference;
     private Preference mCurrencyManagementPreference;
 
     @Override
@@ -96,6 +101,7 @@ public class UtilitySettingFragment extends PreferenceFragmentCompat {
         mExchangeRateCustomApiKey = (ThemedInputPreference) findPreference("exchange_rate_api_key");
         mExchangeRateUpdatePreference = findPreference("exchange_rate_update");
         mCurrencyManagementPreference = findPreference("currency_management");
+        mBaseCurrencyPreference = findPreference("base_currency");
     }
 
     @Override
@@ -140,9 +146,11 @@ public class UtilitySettingFragment extends PreferenceFragmentCompat {
             });
         }
         mExchangeRateServiceListPreference.setEntries(new String[] {
+                getString(R.string.setting_item_utility_exchange_rates_service_era),
                 getString(R.string.setting_item_utility_exchange_rates_service_oer)
         });
         mExchangeRateServiceListPreference.setEntryValues(new String[] {
+                String.valueOf(PreferenceManager.SERVICE_EXCHANGE_RATE_API),
                 String.valueOf(PreferenceManager.SERVICE_OPEN_EXCHANGE_RATE)
         });
         // setup current (or default) values
@@ -151,6 +159,7 @@ public class UtilitySettingFragment extends PreferenceFragmentCompat {
         setupCurrentExchangeRateService();
         setupCurrentExchangeRateCustomApiKey();
         setupCurrentExchangeRateUpdate();
+        setupCurrentBaseCurrency();
         // attach a listener to get notified when values changes
         mDailyReminderPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
@@ -242,6 +251,20 @@ public class UtilitySettingFragment extends PreferenceFragmentCompat {
             }
 
         });
+        mBaseCurrencyPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    Intent intent = new Intent(activity, CurrencyListActivity.class);
+                    intent.putExtra(CurrencyListActivity.ACTIVITY_MODE, CurrencyListActivity.CURRENCY_PICKER);
+                    startActivityForResult(intent, REQUEST_CODE_BASE_CURRENCY);
+                }
+                return false;
+            }
+
+        });
         mCurrencyManagementPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
             @Override
@@ -313,6 +336,9 @@ public class UtilitySettingFragment extends PreferenceFragmentCompat {
                 mExchangeRateServiceListPreference.setSummary(R.string.setting_item_utility_exchange_rates_service_oer);
                 mExchangeRateCustomApiKey.setContent(R.string.setting_item_utility_exchange_rates_service_oer_custom_api_key_message);
                 break;
+            case PreferenceManager.SERVICE_EXCHANGE_RATE_API:
+                mExchangeRateServiceListPreference.setSummary(R.string.setting_item_utility_exchange_rates_service_era);
+                break;
         }
         if (PreferenceManager.hasCurrentExchangeRateServiceDefaultApiKey()) {
             mExchangeRateCustomApiKey.setVisible(false);
@@ -337,6 +363,16 @@ public class UtilitySettingFragment extends PreferenceFragmentCompat {
         }
     }
 
+    private void setupCurrentBaseCurrency() {
+        CurrencyUnit currency = CurrencyConverter.getBaseCurrency();
+        if (currency != null) {
+            String label = currency.getName() + " (" + currency.getIso() + ")";
+            mBaseCurrencyPreference.setSummary(getString(R.string.setting_summary_base_currency, label));
+        } else {
+            mBaseCurrencyPreference.setSummary(R.string.setting_summary_base_currency_missing);
+        }
+    }
+
     private void setupCurrentExchangeRateUpdate() {
         long timestamp = PreferenceManager.getLastExchangeRateUpdateTimestamp();
         String summary = DateFormatter.getDateFromToday(new Date(timestamp));
@@ -346,7 +382,21 @@ public class UtilitySettingFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_LOCK_ACTIVITY) {
+        if (requestCode == REQUEST_CODE_BASE_CURRENCY) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                CurrencyUnit currency = data.getParcelableExtra(CurrencyListActivity.RESULT_CURRENCY);
+                if (currency != null) {
+                    PreferenceManager.setBaseCurrency(currency.getIso());
+                    setupCurrentBaseCurrency();
+                    // totals shown in the main screen depend on the base currency
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.getContentResolver().notifyChange(DataContentProvider.CONTENT_TRANSACTIONS, null);
+                        activity.getContentResolver().notifyChange(DataContentProvider.CONTENT_WALLETS, null);
+                    }
+                }
+            }
+        } else if (requestCode == REQUEST_CODE_LOCK_ACTIVITY) {
             setupCurrentLockMode();
         } else {
             super.onActivityResult(requestCode, resultCode, data);

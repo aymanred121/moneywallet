@@ -46,10 +46,10 @@ public class ThemedFloatingActionButton extends FloatingActionButton implements 
     @Override
     public void onApplyTheme(ITheme theme) {
         boolean isDark = theme.isDark();
-        int colorAccent = theme.getColorAccent();
-        int colorPressed = Util.shiftColor(colorAccent, isDark ? 0.9f : 1.1f);
-        int colorActivated = Util.shiftColor(colorAccent, isDark ? 1.1f : 0.9f);
-        int colorRipple = theme.getColorRipple();
+        // M3 FAB: primary-container fill with on-primary-container icon
+        int colorAccent = theme.getColorPrimaryContainer();
+        int colorPressed = Util.shiftColor(colorAccent, isDark ? 1.1f : 0.94f);
+        int colorRipple = Util.adjustAlpha(theme.getColorOnPrimaryContainer(), 0.16f);
         ColorStateList stateList = new ColorStateList(
                 new int[][] {
                         new int[] {-android.R.attr.state_pressed},
@@ -71,7 +71,7 @@ public class ThemedFloatingActionButton extends FloatingActionButton implements 
     private void setIconColor(ITheme theme) {
         Drawable drawable = getDrawable();
         if (drawable != null) {
-            int color = theme.getBestColor(theme.getColorAccent());
+            int color = theme.getColorOnPrimaryContainer();
             super.setImageDrawable(TintHelper.createTintedDrawable(drawable, color));
         }
     }

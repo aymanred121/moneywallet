@@ -26,6 +26,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.util.TypedValue;
+import android.graphics.Typeface;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -63,7 +65,9 @@ import com.oriondev.moneywallet.broadcast.LocalAction;
 import com.oriondev.moneywallet.model.ColorIcon;
 import com.oriondev.moneywallet.model.Money;
 import com.oriondev.moneywallet.model.WalletAccount;
+import com.oriondev.moneywallet.service.AbstractCurrencyRateDownloadIntentService;
 import com.oriondev.moneywallet.service.BackupHandlerIntentService;
+import com.oriondev.moneywallet.utils.CurrencyConverter;
 import com.oriondev.moneywallet.storage.database.Contract;
 import com.oriondev.moneywallet.storage.database.DataContentProvider;
 import com.oriondev.moneywallet.storage.preference.PreferenceManager;
@@ -148,7 +152,7 @@ public class MainActivity extends BaseActivity implements DrawerController, Acco
     private void initializeNavigationDrawer() {
         mAccountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.color.colorPrimary)
+                .withHeaderBackground(R.color.md_primary_container)
                 .withOnAccountHeaderListener(this)
                 .build();
         mDrawer = new DrawerBuilder()
@@ -208,8 +212,13 @@ public class MainActivity extends BaseActivity implements DrawerController, Acco
 
     private void registerReceiver() {
         IntentFilter filter = new IntentFilter(LocalAction.ACTION_BACKUP_SERVICE_FINISHED);
+        filter.addAction(LocalAction.ACTION_EXCHANGE_RATES_UPDATED);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, filter);
+        // keep the exchange rates fresh: the converted totals depend on them
+        AbstractCurrencyRateDownloadIntentService.refreshIfStale(this, EXCHANGE_RATE_MAX_AGE);
     }
+
+    private static final long EXCHANGE_RATE_MAX_AGE = 12L * 60L * 60L * 1000L;
 
     /**
      * Store all the instance information in order to restore them if the activity is recreated.
@@ -467,11 +476,12 @@ public class MainActivity extends BaseActivity implements DrawerController, Acco
         mCursor = cursor;
         mAccountHeader.clear();
         ITheme theme = ThemeEngine.getTheme();
-        int iconColor = theme.isDark() ? Color.parseColor("#8AFFFFFF") : Color.parseColor("#8A000000");
-        int selectedIconColor = theme.getColorPrimary();
-        int textColor = theme.isDark() ? Color.parseColor("#DEFFFFFF") : Color.parseColor("#DE000000");
-        int selectedTextColor = theme.getColorPrimary();
-        int selectedColor = theme.isDark() ? Color.parseColor("#202020") : Color.parseColor("#E8E8E8");
+        // M3 roles: on-surface-variant icons, on-surface text, secondary-container-like selection
+        int iconColor = theme.getDrawerIconColor();
+        int selectedIconColor = theme.getDrawerSelectedIconColor();
+        int textColor = theme.getDrawerTextColor();
+        int selectedTextColor = theme.getDrawerSelectedTextColor();
+        int selectedColor = theme.getDrawerSelectedItemColor();
         if (mCursor != null) {
             int indexWalletId = mCursor.getColumnIndex(Contract.Wallet.ID);
             int indexWalletName = mCursor.getColumnIndex(Contract.Wallet.NAME);
@@ -565,6 +575,8 @@ public class MainActivity extends BaseActivity implements DrawerController, Acco
         }
         if (money.getNumberOfCurrencies() > 0) {
             String name = getString(R.string.total_wallet_name);
+            // wallets in different currencies are summed up in the user base currency
+            money = CurrencyConverter.toBaseCurrencyIfMixed(money);
             return new WalletAccount()
                     .withIdentifier(PreferenceManager.TOTAL_WALLET_ID)
                     .withName(name)
@@ -598,15 +610,26 @@ public class MainActivity extends BaseActivity implements DrawerController, Acco
     }
 
     private void applyNavigationDrawerHeaderTheme(ITheme theme) {
-        int backgroundColor = theme.getColorPrimary();
-        int textColor = theme.getBestTextColor(backgroundColor);
-        mAccountHeader.setBackground(new ColorDrawable(theme.getColorPrimary()));
+        // M3: the account header is a primary-container surface with on-primary-container content.
+        int backgroundColor = theme.getColorPrimaryContainer();
+        int textColor = theme.getColorOnPrimaryContainer();
+        mAccountHeader.setBackground(new ColorDrawable(backgroundColor));
         View headerView = mAccountHeader.getView();
         TextView nameTextView = headerView.findViewById(com.mikepenz.materialdrawer.R.id.material_drawer_account_header_name);
         TextView emailTextView = headerView.findViewById(com.mikepenz.materialdrawer.R.id.material_drawer_account_header_email);
         ImageView switcherImageView = headerView.findViewById(com.mikepenz.materialdrawer.R.id.material_drawer_account_header_text_switcher);
-        if (nameTextView != null) {nameTextView.setTextColor(textColor);}
-        if (emailTextView != null) {emailTextView.setTextColor(textColor);}
+        if (nameTextView != null) {
+            // wallet name: title-medium
+            nameTextView.setTextColor(textColor);
+            nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            nameTextView.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        }
+        if (emailTextView != null) {
+            // balance: headline-small (display-small would overflow long multi-currency totals)
+            emailTextView.setTextColor(textColor);
+            emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            emailTextView.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+        }
         if (switcherImageView != null) {
             switcherImageView.setColorFilter(textColor, PorterDuff.Mode.SRC_ATOP);
         }
@@ -654,6 +677,11 @@ public class MainActivity extends BaseActivity implements DrawerController, Acco
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null) {
+                if (LocalAction.ACTION_EXCHANGE_RATES_UPDATED.equals(intent.getAction())) {
+                    // fresh rates: the total in base currency must be recomputed
+                    getSupportLoaderManager().restartLoader(LOADER_WALLETS, null, MainActivity.this);
+                    return;
+                }
                 int action = intent.getIntExtra(BackupHandlerIntentService.ACTION, 0);
                 if (action == BackupHandlerIntentService.ACTION_RESTORE) {
                     getSupportLoaderManager().restartLoader(LOADER_WALLETS, null, MainActivity.this);
