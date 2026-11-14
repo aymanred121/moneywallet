@@ -31,5 +31,18 @@ class MigrationTest {
         }
     }
 
+    @Test fun v2ToV3AddsBudgetExclusionsAndKeepsBudgets() {
+        helper.createDatabase(DB, 2).apply {
+            execSQL("INSERT INTO budgets (id, uuid, type, startDate, endDate, money, currency, lastEdit) VALUES (1, 'b', 0, 0, 1, 50000, 'SAR', 0)")
+            execSQL("INSERT INTO categories (id, uuid, name, icon, type, showReport, sortIndex, lastEdit) VALUES (1, 'c', 'Rent', '', 1, 1, 0, 0)")
+            close()
+        }
+        helper.runMigrationsAndValidate(DB, 3, true).use { db ->
+            db.query("SELECT money FROM budgets WHERE uuid = 'b'").use { c -> c.moveToFirst(); assertEquals(50000L, c.getLong(0)) }
+            db.execSQL("INSERT INTO budget_excluded_categories (budgetId, categoryId) VALUES (1, 1)")
+            db.query("SELECT COUNT(*) FROM budget_excluded_categories").use { c -> c.moveToFirst(); assertEquals(1, c.getInt(0)) }
+        }
+    }
+
     private companion object { const val DB = "migration-test.db" }
 }

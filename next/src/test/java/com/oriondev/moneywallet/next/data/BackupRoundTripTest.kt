@@ -44,6 +44,20 @@ class BackupRoundTripTest {
         source.db.close(); target.close()
     }
 
+    @Test fun budgetExclusionsRoundTrip() = runBlocking {
+        val source = TestData().apply { seed() }
+        val b = com.oriondev.moneywallet.next.data.db.BudgetEntity(uuid = "budget-1", type = com.oriondev.moneywallet.next.data.db.BudgetType.EXPENSES, startDate = 0, endDate = 1, money = 100, currency = "SAR")
+        source.db.budgets().save(b, listOf(source.cash), excludedCategoryIds = listOf(source.food))
+        val bytes = ByteArrayOutputStream().also { BackupCodec(source.db).export(it) }.toByteArray()
+
+        val target = Room.inMemoryDatabaseBuilder(source.context, WalletDatabase::class.java).allowMainThreadQueries().build()
+        BackupCodec(target).import(ByteArrayInputStream(bytes))
+        val budget = target.budgets().all().single { it.uuid == "budget-1" }
+        val excluded = target.budgets().excludedCategoryIds(budget.id).map { id -> target.categories().byId(id)!!.name }
+        assertEquals(listOf("Food"), excluded)
+        source.db.close(); target.close()
+    }
+
     @Test fun unreadableRowsAreReportedNotMovedToToday() = runBlocking {
         val json = """
             {"header":{"version_code":3},

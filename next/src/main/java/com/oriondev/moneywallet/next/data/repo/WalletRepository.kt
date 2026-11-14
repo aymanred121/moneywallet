@@ -149,7 +149,11 @@ class WalletRepository(val db: WalletDatabase, val prefs: UserPreferences) {
     /** A wallet's currency can only change while it has no transactions (amounts are stored in it). */
     suspend fun walletHasTransactions(walletId: Long): Boolean = db.transactions().countForWallet(walletId) > 0
     suspend fun saveCategory(c: CategoryEntity): Long = if (c.id == 0L) db.categories().insert(c) else { db.categories().update(c); c.id }
-    suspend fun deleteCategory(c: CategoryEntity) = db.withTransaction { db.categories().detachChildren(c.id); db.categories().delete(c) }
+    suspend fun deleteCategory(c: CategoryEntity) = db.withTransaction {
+        db.categories().detachChildren(c.id)
+        db.budgets().deleteExclusionsForCategory(c.id)
+        db.categories().delete(c)
+    }
 
     /** System + a sensible starter set, only when the database has no categories yet. */
     suspend fun ensureDefaultCategories() {

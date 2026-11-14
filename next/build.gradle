@@ -10,8 +10,8 @@ android {
         applicationId "com.oriondev.moneywallet.next"
         minSdk 26
         targetSdk 35
-        versionCode 13
-        versionName "6.4.0"
+        versionCode 14
+        versionName "6.5.0"
         vectorDrawables.useSupportLibrary = true
     }
     buildFeatures {
@@ -75,6 +75,11 @@ android {
             excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt', 'META-INF/*.kotlin_module']
         }
     }
+}
+
+// unit tests read the exported Room schemas as debug assets: export them before the assets merge
+tasks.configureEach { task ->
+    if (task.name == 'mergeDebugAssets') task.dependsOn('kspDebugKotlin')
 }
 
 ksp {

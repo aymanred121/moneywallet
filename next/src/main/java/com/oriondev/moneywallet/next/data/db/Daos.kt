@@ -243,6 +243,10 @@ interface TransactionDao {
         WHERE bw.budgetId = :budgetId AND t.direction = :direction AND t.date >= :from AND t.date < :to
           AND t.confirmed = 1 AND t.countInTotal = 1 AND $NOT_TRANSFER
           AND (:categoryId IS NULL OR t.categoryId = :categoryId OR c.parentId = :categoryId)
+          AND NOT EXISTS (
+            SELECT 1 FROM budget_excluded_categories x
+            WHERE x.budgetId = :budgetId AND (x.categoryId = t.categoryId OR x.categoryId = c.parentId)
+          )
         GROUP BY w.currency
         """
     )
@@ -348,14 +352,24 @@ interface BudgetDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun insertWallets(links: List<BudgetWalletEntity>)
     @Query("DELETE FROM budget_wallets WHERE budgetId = :budgetId") suspend fun deleteWallets(budgetId: Long)
     @Query("DELETE FROM budget_wallets WHERE walletId = :walletId") suspend fun deleteWalletLinks(walletId: Long)
+    @Query("SELECT categoryId FROM budget_excluded_categories WHERE budgetId = :budgetId") suspend fun excludedCategoryIds(budgetId: Long): List<Long>
+    @Query("SELECT * FROM budget_excluded_categories") suspend fun allExclusions(): List<BudgetExcludedCategoryEntity>
+    @Query("SELECT * FROM budget_excluded_categories") fun observeAllExclusions(): Flow<List<BudgetExcludedCategoryEntity>>
+    @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun insertExclusions(items: List<BudgetExcludedCategoryEntity>)
+    @Query("DELETE FROM budget_excluded_categories WHERE budgetId = :budgetId") suspend fun deleteExclusions(budgetId: Long)
+    @Query("DELETE FROM budget_excluded_categories WHERE categoryId = :categoryId") suspend fun deleteExclusionsForCategory(categoryId: Long)
+    @Query("DELETE FROM budget_excluded_categories") suspend fun deleteAllExclusions()
     @Query("DELETE FROM budgets") suspend fun deleteAll()
     @Query("DELETE FROM budget_wallets") suspend fun deleteAllWallets()
 
+    /** Saves the budget with its wallets and the categories it does not count. */
     @Transaction
-    suspend fun save(b: BudgetEntity, walletIds: List<Long>): Long {
+    suspend fun save(b: BudgetEntity, walletIds: List<Long>, excludedCategoryIds: List<Long> = emptyList()): Long {
         val id = if (b.id == 0L) insert(b) else { update(b); b.id }
         deleteWallets(id)
         insertWallets(walletIds.map { BudgetWalletEntity(id, it) })
+        deleteExclusions(id)
+        if (excludedCategoryIds.isNotEmpty()) insertExclusions(excludedCategoryIds.distinct().map { BudgetExcludedCategoryEntity(id, it) })
         return id
     }
 }

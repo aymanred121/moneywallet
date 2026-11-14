@@ -2,6 +2,7 @@ package com.oriondev.moneywallet.next.data.backup
 
 import com.oriondev.moneywallet.next.core.Dates
 import com.oriondev.moneywallet.next.data.db.BudgetEntity
+import com.oriondev.moneywallet.next.data.db.BudgetExcludedCategoryEntity
 import com.oriondev.moneywallet.next.data.db.BudgetWalletEntity
 import com.oriondev.moneywallet.next.data.db.CategoryEntity
 import com.oriondev.moneywallet.next.data.db.CategoryType
@@ -60,7 +61,7 @@ class BackupCodec(private val db: WalletDatabase, private val prefs: UserPrefere
         val problems = ProblemCounter()
         run {
             if (replace) {
-                db.goals().deleteAll(); db.transactions().deleteAll(); db.transfers().deleteAll(); db.budgets().deleteAllWallets(); db.budgets().deleteAll()
+                db.goals().deleteAll(); db.transactions().deleteAll(); db.transfers().deleteAll(); db.budgets().deleteAllWallets(); db.budgets().deleteAllExclusions(); db.budgets().deleteAll()
                 db.categories().deleteAll(); db.wallets().deleteAll()
             }
             // currencies (merge, never delete)
@@ -163,6 +164,12 @@ class BackupCodec(private val db: WalletDatabase, private val prefs: UserPrefere
                 BudgetWalletEntity(b, w)
             } ?: emptyList()
             if (links.isNotEmpty()) db.budgets().insertWallets(links)
+            val exclusions = root.optJSONArray(EXCLUSIONS_KEY)?.objects()?.mapNotNull { o ->
+                val b = budgetIds[o.optString("budget")] ?: return@mapNotNull null
+                val c = categoryIds[o.optString("category")] ?: return@mapNotNull null
+                BudgetExcludedCategoryEntity(b, c)
+            } ?: emptyList()
+            if (exclusions.isNotEmpty()) db.budgets().insertExclusions(exclusions)
             val goals = ArrayList<GoalEntity>()
             val now = System.currentTimeMillis()
             // legacy savings become manual goals; their deposits are ordinary transactions already imported above
@@ -204,7 +211,7 @@ class BackupCodec(private val db: WalletDatabase, private val prefs: UserPrefere
         val sections = db.withTransaction { buildExport() }
         val json = buildString {
             append('{')
-            (LEGACY_ORDER + GOALS_KEY).forEachIndexed { i, key ->
+            (LEGACY_ORDER + GOALS_KEY + EXCLUSIONS_KEY).forEachIndexed { i, key ->
                 if (i > 0) append(',')
                 append(JSONObject.quote(key)).append(':').append(sections[key] ?: JSONArray())
             }
@@ -257,6 +264,13 @@ class BackupCodec(private val db: WalletDatabase, private val prefs: UserPrefere
                 put(JSONObject().put("budget", b).put("wallet", w).put("id", UUID.nameUUIDFromBytes("$b:$w".toByteArray()).toString()).put("last_edit", System.currentTimeMillis()).put("deleted", false))
             }
         })
+        root.put(EXCLUSIONS_KEY, JSONArray().apply {
+            db.budgets().allExclusions().forEach { x ->
+                val b = budgetUuid[x.budgetId] ?: return@forEach
+                val c = categoryUuid[x.categoryId] ?: return@forEach
+                put(JSONObject().put("budget", b).put("category", c))
+            }
+        })
         val transactions = db.transactions().all()
         val txUuid = transactions.associate { it.id to it.uuid }
         root.put("transactions", JSONArray().apply {
@@ -297,6 +311,8 @@ class BackupCodec(private val db: WalletDatabase, private val prefs: UserPrefere
         )
         /** Written after [LEGACY_ORDER], where the legacy reader has already stopped. */
         const val GOALS_KEY = "next_goals"
+        /** Categories each budget does not count; also after [LEGACY_ORDER]. */
+        const val EXCLUSIONS_KEY = "next_budget_exclusions"
     }
 
     private fun readDatabaseJson(input: InputStream): String? {

@@ -1,5 +1,11 @@
 package com.oriondev.moneywallet.next.ui.screens.manage
 
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Checkbox
+import androidx.compose.material.icons.outlined.FilterAltOff
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -81,6 +87,8 @@ data class BudgetForm(
     val start: LocalDate = Dates.monthStart(Dates.currentMonthAnchor()),
     val end: LocalDate = Dates.monthEndExclusive(Dates.currentMonthAnchor()).minusDays(1),
     val walletIds: Set<Long> = emptySet(),
+    /** Categories this budget does not count (subcategories follow their parent); overall budgets only. */
+    val excluded: Set<Long> = emptySet(),
     val loaded: Boolean = false,
 )
 
@@ -102,7 +110,8 @@ class EditBudgetViewModel(private val container: AppContainer, private val id: L
                     id = b.id, uuid = b.uuid, type = b.type, categoryId = b.categoryId,
                     amount = MoneyFormat.toDecimal(b.money, ctx.currency(b.currency)).toPlainString(), currency = b.currency,
                     start = Dates.toLocalDate(b.startDate), end = Dates.toLocalDate(b.endDate),
-                    walletIds = container.db.budgets().walletIds(b.id).toSet(), loaded = true,
+                    walletIds = container.db.budgets().walletIds(b.id).toSet(),
+                    excluded = container.db.budgets().excludedCategoryIds(b.id).toSet(), loaded = true,
                 )
             }
         }
@@ -118,12 +127,14 @@ class EditBudgetViewModel(private val container: AppContainer, private val id: L
         container.db.budgets().save(
             BudgetEntity(id = f.id, uuid = f.uuid, type = f.type, categoryId = if (f.type == BudgetType.CATEGORY) f.categoryId else null, startDate = Dates.startOfDay(f.start), endDate = Dates.startOfDay(f.end), money = minor, currency = iso, lastEdit = System.currentTimeMillis()),
             f.walletIds.toList(),
+            if (f.type == BudgetType.CATEGORY) emptyList() else f.excluded.toList(),
         )
         saved.value = true
     }
 
     fun delete() = viewModelScope.launch {
         container.db.budgets().deleteWallets(id)
+        container.db.budgets().deleteExclusions(id)
         container.db.budgets().deleteById(id)
         saved.value = true
     }
@@ -141,6 +152,7 @@ fun EditBudgetScreen(navController: NavHostController, id: Long) {
     var showCurrency by remember { mutableStateOf(false) }
     var showCategory by remember { mutableStateOf(false) }
     var showRange by remember { mutableStateOf(false) }
+    var showExclusions by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
 
     if (saved) LaunchedEffect(Unit) { navController.popBackStack() }
@@ -187,6 +199,16 @@ fun EditBudgetScreen(navController: NavHostController, id: Long) {
                 SegmentedButton(selected = preset == 2, onClick = { showRange = true }, shape = SegmentedButtonDefaults.itemShape(2, 3)) { Text("Custom") }
             }
             SettingRow(title = "${Dates.dayLabelWithYear(Dates.startOfDay(form.start))} – ${Dates.dayLabelWithYear(Dates.startOfDay(form.end))}", subtitle = "${Dates.daysBetween(form.start, form.end) + 1} days", onClick = { showRange = true })
+            if (form.type != BudgetType.CATEGORY) {
+                val excludedNames = categories.filter { it.id in form.excluded }.map { it.name }
+                Text("Don't count", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                SettingRow(
+                    title = if (excludedNames.isEmpty()) "Every category counts" else excludedNames.joinToString(", "),
+                    subtitle = if (excludedNames.isEmpty()) "Tap to leave out categories such as rent or bills" else "Left out of this budget, with their subcategories",
+                    icon = Icons.Outlined.FilterAltOff,
+                    onClick = { showExclusions = true },
+                )
+            }
             Text("Wallets", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 wallets.filter { !it.archived || it.id in form.walletIds }.forEach { w ->
@@ -223,6 +245,44 @@ fun EditBudgetScreen(navController: NavHostController, id: Long) {
                 }
             }
             Spacer(Modifier.height(32.dp))
+        }
+    }
+    if (showExclusions) {
+        ModalBottomSheet(onDismissRequest = { showExclusions = false }) {
+            Text("Don't count", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp))
+            Text(
+                "Spending in these categories is left out of this budget. Leaving out a category also leaves out its subcategories.",
+                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
+            )
+            val wanted = if (form.type == BudgetType.INCOMES) CategoryType.INCOME else CategoryType.EXPENSE
+            val parents = categories.filter { it.type == wanted && it.parentId == null }.sortedWith(compareBy({ it.sortIndex }, { it.name }))
+            val children = categories.filter { it.type == wanted && it.parentId != null }.groupBy { it.parentId }
+            LazyColumn(Modifier.heightIn(max = 520.dp)) {
+                parents.forEach { parent ->
+                    val sub = children[parent.id].orEmpty().sortedBy { it.name }
+                    items(listOf(parent) + sub, key = { it.id }) { c ->
+                        val coveredByParent = c.parentId != null && c.parentId in form.excluded
+                        val checked = c.id in form.excluded || coveredByParent
+                        ListItem(
+                            headlineContent = { Text(c.name) },
+                            supportingContent = if (coveredByParent) { { Text("Left out with ${parent.name}") } } else null,
+                            leadingContent = { SpecIcon(c.icon, 36.dp) },
+                            trailingContent = { Checkbox(checked = checked, onCheckedChange = null, enabled = !coveredByParent) },
+                            modifier = Modifier.padding(start = if (c.parentId != null) 24.dp else 0.dp).toggleable(
+                                value = checked, enabled = !coveredByParent, role = Role.Checkbox,
+                                onValueChange = { on -> vm.update { f -> f.copy(excluded = if (on) f.excluded + c.id else f.excluded - c.id) } },
+                            ),
+                        )
+                    }
+                }
+            }
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.End) {
+                if (form.excluded.isNotEmpty()) TextButton(onClick = { vm.update { it.copy(excluded = emptySet()) } }) { Text("Count everything") }
+                Spacer(Modifier.width(8.dp))
+                Button(onClick = { showExclusions = false }) { Text("Done") }
+            }
+            Spacer(Modifier.height(24.dp))
         }
     }
     if (showRange) {

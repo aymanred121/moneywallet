@@ -101,6 +101,12 @@ jobs:
           path: dist/*.apk
           if-no-files-found: error
 
+      - name: Upload Room schemas
+        uses: actions/upload-artifact@v7
+        with:
+          name: room-schemas
+          path: next/schemas/
+
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7

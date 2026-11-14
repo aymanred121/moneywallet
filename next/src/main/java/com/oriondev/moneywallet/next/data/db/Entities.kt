@@ -116,6 +116,21 @@ data class BudgetEntity(
 @Entity(tableName = "budget_wallets", primaryKeys = ["budgetId", "walletId"])
 data class BudgetWalletEntity(val budgetId: Long, val walletId: Long)
 
+/**
+ * A category (with its subcategories) an overall budget does not count, e.g. rent in a monthly
+ * spending budget. Removed with its budget or category.
+ */
+@Entity(
+    tableName = "budget_excluded_categories",
+    primaryKeys = ["budgetId", "categoryId"],
+    indices = [Index("categoryId")],
+    foreignKeys = [
+        ForeignKey(entity = BudgetEntity::class, parentColumns = ["id"], childColumns = ["budgetId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = CategoryEntity::class, parentColumns = ["id"], childColumns = ["categoryId"], onDelete = ForeignKey.CASCADE),
+    ],
+)
+data class BudgetExcludedCategoryEntity(val budgetId: Long, val categoryId: Long)
+
 @Entity(tableName = "exchange_rates")
 data class ExchangeRateEntity(
     @PrimaryKey val iso: String,

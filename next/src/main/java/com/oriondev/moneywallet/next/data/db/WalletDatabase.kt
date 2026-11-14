@@ -10,13 +10,13 @@ import androidx.room.RoomDatabase
     entities = [
         CurrencyEntity::class, WalletEntity::class, CategoryEntity::class, TransactionEntity::class,
         TransferEntity::class, BudgetEntity::class, BudgetWalletEntity::class, ExchangeRateEntity::class,
-        GoalEntity::class, CaptureEntity::class,
+        GoalEntity::class, CaptureEntity::class, BudgetExcludedCategoryEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
     // Every schema change needs a migration (auto or manual) and a MigrationTest: there is no
     // destructive fallback, so a missing migration fails loudly instead of wiping user data.
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 abstract class WalletDatabase : RoomDatabase() {
     abstract fun currencies(): CurrencyDao

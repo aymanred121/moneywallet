@@ -57,6 +57,7 @@ import java.time.LocalDate
 class BudgetsViewModel(container: AppContainer) : ViewModel() {
     val budgets = container.db.budgets().observeAll().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
     val categories = container.repo.categories.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val exclusions = container.db.budgets().observeAllExclusions().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 }
 
 /** Direction the budget tracks: incomes for INCOMES budgets and income categories, expenses otherwise. */
@@ -71,6 +72,8 @@ fun BudgetsScreen(navController: NavHostController) {
     val active = budgets.filter { it.endDate >= today }
     val past = budgets.filter { it.endDate < today }
     val catById = categories.associateBy { it.id }
+    val exclusions by vm.exclusions.collectAsStateWithLifecycle()
+    val excludedNames = exclusions.groupBy({ it.budgetId }, { catById[it.categoryId]?.name }).mapValues { (_, v) -> v.filterNotNull().sorted() }
 
     ManageScaffold(
         title = "Budgets",
@@ -83,16 +86,16 @@ fun BudgetsScreen(navController: NavHostController) {
         }
         LazyColumn(Modifier.fillMaxSize(), contentPadding = padding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (active.isNotEmpty()) item(key = "h-active") { GroupLabel("Active") }
-            items(active, key = { it.id }) { b -> BudgetCard(b, catById[b.categoryId ?: -1], ctx, Modifier.animateItem()) { navController.navigate(Routes.editBudget(b.id)) } }
+            items(active, key = { it.id }) { b -> BudgetCard(b, catById[b.categoryId ?: -1], ctx, Modifier.animateItem(), excluded = excludedNames[b.id].orEmpty()) { navController.navigate(Routes.editBudget(b.id)) } }
             if (past.isNotEmpty()) item(key = "h-past") { GroupLabel("Past") }
-            items(past, key = { it.id }) { b -> BudgetCard(b, catById[b.categoryId ?: -1], ctx, Modifier.animateItem(), past = true) { navController.navigate(Routes.editBudget(b.id)) } }
+            items(past, key = { it.id }) { b -> BudgetCard(b, catById[b.categoryId ?: -1], ctx, Modifier.animateItem(), past = true, excluded = excludedNames[b.id].orEmpty()) { navController.navigate(Routes.editBudget(b.id)) } }
             item { Spacer(Modifier.height(96.dp)) }
         }
     }
 }
 
 @Composable
-private fun BudgetCard(b: BudgetEntity, category: CategoryEntity?, ctx: com.oriondev.moneywallet.next.data.repo.CurrencyContext, modifier: Modifier = Modifier, past: Boolean = false, onClick: () -> Unit) {
+private fun BudgetCard(b: BudgetEntity, category: CategoryEntity?, ctx: com.oriondev.moneywallet.next.data.repo.CurrencyContext, modifier: Modifier = Modifier, past: Boolean = false, excluded: List<String> = emptyList(), onClick: () -> Unit) {
     val container = LocalAppContainer.current
     val direction = budgetDirection(b, category)
     val spentFlow = remember(b, category) {
@@ -126,6 +129,10 @@ private fun BudgetCard(b: BudgetEntity, category: CategoryEntity?, ctx: com.orio
                 Column(Modifier.weight(1f)) {
                     Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Text("${Dates.dayLabelWithYear(b.startDate)} – ${Dates.dayLabelWithYear(b.endDate)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (excluded.isNotEmpty()) Text(
+                        "Excludes ${excluded.joinToString(", ")}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    )
                 }
                 AmountText(b.money, currency, style = MaterialTheme.typography.titleMedium)
             }
